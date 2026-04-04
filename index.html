@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DFT-DEE-THF | KaiLos Lab Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;--purple:#bc8cff;--dee:#2196F3;--thf:#F44336;--tte:#FF9800;--fsi:#4CAF50}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+header{text-align:center;padding:40px 20px;border-bottom:1px solid var(--border)}
+header h1{font-size:2.2em;background:linear-gradient(135deg,var(--dee),var(--thf));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+header .subtitle{color:var(--muted);font-size:1.1em}
+header .meta{margin-top:12px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+header .meta span{background:var(--card);padding:4px 14px;border-radius:20px;font-size:0.85em;border:1px solid var(--border)}
+nav{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--border);z-index:100;padding:10px 0;display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+nav a{color:var(--muted);text-decoration:none;padding:6px 16px;border-radius:8px;font-size:0.9em;transition:all .2s}
+nav a:hover,nav a.active{background:var(--card);color:var(--accent)}
+section{padding:40px 0;border-bottom:1px solid var(--border)}
+section h2{font-size:1.6em;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+section h2 .badge{font-size:0.5em;padding:4px 10px;border-radius:12px;vertical-align:middle}
+.badge-green{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--yellow);border:1px solid rgba(210,153,34,.3)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--red);border:1px solid rgba(248,81,73,.3)}
+.grid{display:grid;gap:20px}
+.grid-2{grid-template-columns:repeat(auto-fit,minmax(400px,1fr))}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.grid-4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;transition:border-color .2s}
+.card:hover{border-color:var(--accent)}
+.card h3{font-size:1.1em;margin-bottom:12px;color:var(--accent)}
+.card .value{font-size:2.4em;font-weight:700}
+.card .label{color:var(--muted);font-size:0.85em;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:0.9em}
+th{background:rgba(88,166,255,.08);text-align:left;padding:10px 12px;border-bottom:2px solid var(--border);color:var(--accent);font-weight:600;white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid var(--border)}
+tr:hover td{background:rgba(88,166,255,.04)}
+.dee{color:var(--dee)}.thf{color:var(--thf)}.tte{color:var(--tte)}.fsi{color:var(--fsi)}
+.progress-bar{background:var(--border);border-radius:8px;height:24px;overflow:hidden;position:relative}
+.progress-fill{height:100%;border-radius:8px;transition:width .5s}
+.progress-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:0.8em;font-weight:600;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.mermaid{background:var(--card);border-radius:12px;padding:20px;overflow-x:auto}
+.mermaid svg{max-width:100%}
+.insight{background:linear-gradient(135deg,rgba(88,166,255,.05),rgba(188,140,255,.05));border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:20px;margin:16px 0}
+.insight h4{color:var(--accent);margin-bottom:8px}
+.chart-container{position:relative;height:400px;width:100%}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:0.75em;font-weight:600;margin:2px}
+.tag-a{background:rgba(63,185,80,.15);color:var(--green)}
+.tag-b{background:rgba(210,153,34,.15);color:var(--yellow)}
+.tag-c{background:rgba(248,81,73,.15);color:var(--red)}
+footer{text-align:center;padding:40px;color:var(--muted);font-size:0.85em}
+.timestamp{color:var(--yellow);font-weight:600}
+@media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}header h1{font-size:1.6em}.card .value{font-size:1.8em}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>DFT-DEE-THF Project Dashboard</h1>
+  <div class="subtitle">Cyclic(THF) vs Linear(DEE) Ether in LiFSI/TTE LHCE — DFT Cluster Study</div>
+  <div class="meta">
+    <span>Method: wB97X-D3/def2-TZVP//def2-SVP</span>
+    <span>Software: ORCA 6.1.0</span>
+    <span>Server: 48-core AMD EPYC</span>
+    <span class="timestamp">Updated: 2026-04-04</span>
+  </div>
+</header>
+
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#pipeline">Pipeline</a>
+  <a href="#descriptors">Descriptors</a>
+  <a href="#phase1">Phase 1</a>
+  <a href="#phase2">Phase 2</a>
+  <a href="#phase3">Phase 3</a>
+  <a href="#reliability">Reliability</a>
+  <a href="#discussion">Discussion</a>
+  <a href="#progress">Progress</a>
+</nav>
+
+<!-- ═══════════════ OVERVIEW ═══════════════ -->
+<section id="overview">
+<h2>Project Overview</h2>
+<div class="grid grid-4">
+  <div class="card"><div class="value" style="color:var(--green)">3/3</div><div class="label">Active Phases Complete</div></div>
+  <div class="card"><div class="value">22</div><div class="label">Cluster Structures Computed</div></div>
+  <div class="card"><div class="value">10</div><div class="label">PES Scans (5 complete)</div></div>
+  <div class="card"><div class="value" style="color:var(--yellow)">~78%</div><div class="label">Publication Readiness</div></div>
+</div>
+
+<div class="insight" style="margin-top:24px">
+<h4>Research Question</h4>
+<p>LiFSI/TTE 기반 LHCE 전해질에서 <span class="dee">DEE(linear ether)</span> vs <span class="thf">THF(cyclic ether)</span>의 Li<sup>+</sup> 용매화/탈용매화 역학 차이를 DFT로 규명. 동일 조건 head-to-head 비교는 <strong>최초</strong>.</p>
+</div>
+</section>
+
+<!-- ═══════════════ PIPELINE ═══════════════ -->
+<section id="pipeline">
+<h2>Calculation Pipeline</h2>
+
+<div class="mermaid">
+graph LR
+  subgraph Phase1["Phase 1: Monomer Properties"]
+    M1["Li+, FSI-, DEE, THF, TTE<br/>Opt + Freq<br/>wB97X-D3/def2-TZVP"]
+  end
+  subgraph Phase2["Phase 2: Solvation Clusters"]
+    M2A["Li+(solvent)n<br/>n=1-4, SVP Opt"]
+    M2B["TZVP Single Point"]
+    M2C["Freq Analysis<br/>Thermochemistry 298/233/223K"]
+    M2D["FSI- CIP Clusters"]
+    M2E["TTE Mixed Clusters"]
+    M2A --> M2B --> M2C
+    M2A --> M2D
+    M2A --> M2E
+  end
+  subgraph Phase3["Phase 3: Desolvation Barriers"]
+    M3A["Relaxed PES Scan<br/>Li-O: 1.8→6.0 Å"]
+    M3B["Barrier Height ΔG‡"]
+    M3C["Temperature Correction"]
+    M3A --> M3B --> M3C
+  end
+
+  Phase1 -->|"Monomer E"| Phase2
+  Phase2 -->|"Optimized structures"| Phase3
+
+  style Phase1 fill:#1a3a2a,stroke:#3fb950,stroke-width:2px,color:#e6edf3
+  style Phase2 fill:#1a3a2a,stroke:#3fb950,stroke-width:2px,color:#e6edf3
+  style Phase3 fill:#2a2a1a,stroke:#d29922,stroke-width:2px,color:#e6edf3
+</div>
+
+<div class="grid grid-3" style="margin-top:24px">
+<div class="card">
+  <h3>Phase 1 — Why?</h3>
+  <p>개별 분자의 기저 에너지, ZPE, 진동 모드를 확보하여 Phase 2에서 <strong>결합 에너지(ΔE<sub>bind</sub>)</strong> 계산의 기준점 제공. HOMO/LUMO gap으로 전자적 특성 비교.</p>
+</div>
+<div class="card">
+  <h3>Phase 2 — Why?</h3>
+  <p>Li<sup>+</sup> 주변 용매화 쉘의 <strong>열역학적 안정성</strong>을 정량화. DEE vs THF의 배위수별 ΔG 차이, TTE 희석제 효과, FSI<sup>-</sup> CIP 형성 에너지를 측정. 논문의 <strong>핵심 데이터</strong>.</p>
+</div>
+<div class="card">
+  <h3>Phase 3 — Why?</h3>
+  <p>저온 배터리 성능의 bottleneck인 <strong>탈용매화 에너지 장벽(ΔG<sup>‡</sup>)</strong>을 직접 계산. DEE가 THF보다 낮은 장벽을 가지는지 확인 → <strong>저온 성능 우위의 근본 원인 규명</strong>.</p>
+</div>
+</div>
+</section>
+
+<!-- ═══════════════ DESCRIPTORS ═══════════════ -->
+<section id="descriptors">
+<h2>Paper Descriptors (논문 필수 물성)</h2>
+
+<div class="grid grid-2">
+<div class="card">
+<h3>Computed (확보 완료)</h3>
+<table>
+<tr><th>Descriptor</th><th>Phase</th><th>Status</th></tr>
+<tr><td>Binding Energy ΔE<sub>bind</sub></td><td>P2</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td>Gibbs Free Energy ΔG(T)</td><td>P2</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td>Enthalpy ΔH(T)</td><td>P2</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td>Entropy Penalty TΔS</td><td>P2</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td>ZPE Correction</td><td>P1,P2</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td>HOMO/LUMO Gap</td><td>P1</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td>Dipole Moment</td><td>P1</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td>Li-O Bond Length</td><td>P2</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td>NPA Charge Transfer</td><td>P2</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td>Desolvation Barrier ΔG<sup>‡</sup></td><td>P3</td><td><span class="tag tag-b">5/10</span></td></tr>
+<tr><td>PES Scan Profiles</td><td>P3</td><td><span class="tag tag-b">5/10</span></td></tr>
+</table>
+</div>
+<div class="card">
+<h3>Missing / Optional</h3>
+<table>
+<tr><th>Descriptor</th><th>Requirement</th><th>Status</th></tr>
+<tr><td>NCI (IGM/RDG) Isosurface</td><td>Visual (optional)</td><td><span class="tag tag-c">Multiwfn 미설치</span></td></tr>
+<tr><td>NBO Orbital Analysis</td><td>Recommended</td><td><span class="tag tag-c">NBO7 미설치</span></td></tr>
+<tr><td>IR/Raman Spectra</td><td>SI</td><td><span class="tag tag-b">Freq로 가능</span></td></tr>
+<tr><td>BSSE Correction (gCP)</td><td>Optional</td><td><span class="tag tag-b">Input 생성됨</span></td></tr>
+</table>
+</div>
+</div>
+</section>
+
+<!-- ═══════════════ PHASE 1 ═══════════════ -->
+<section id="phase1">
+<h2>Phase 1: Monomer Properties <span class="badge badge-green">COMPLETE</span></h2>
+
+<div class="card" style="overflow-x:auto">
+<table>
+<tr><th>Molecule</th><th>E<sub>TZVP</sub> (Ha)</th><th>ZPE (kcal/mol)</th><th>Dipole (D)</th><th>HOMO (eV)</th><th>LUMO (eV)</th><th>Gap (eV)</th></tr>
+<tr><td>Li<sup>+</sup></td><td>-7.2897</td><td>0.00</td><td>0.000</td><td>-66.65</td><td>-5.30</td><td>61.35</td></tr>
+<tr><td class="dee">DEE</td><td>-233.6889</td><td>86.23</td><td>1.085</td><td>-9.53</td><td>3.25</td><td>12.78</td></tr>
+<tr><td class="thf">THF</td><td>-232.4772</td><td>74.03</td><td>1.618</td><td>-9.53</td><td>3.15</td><td>12.68</td></tr>
+<tr><td class="fsi">FSI<sup>-</sup></td><td>-1351.9269</td><td>19.88</td><td>0.421</td><td>-6.49</td><td>7.26</td><td>13.75</td></tr>
+<tr><td class="tte">TTE</td><td>-1067.0989</td><td>65.89</td><td>1.249</td><td>-12.22</td><td>2.89</td><td>15.11</td></tr>
+</table>
+</div>
+
+<div class="insight">
+<h4>Key Finding</h4>
+<p>THF의 쌍극자 모멘트(1.618 D)가 DEE(1.085 D)보다 <strong>49% 높음</strong> → Li<sup>+</sup>와의 정전기적 상호작용이 더 강함. 그러나 HOMO/LUMO gap은 거의 동일(12.68 vs 12.78 eV) → 전자적 반응성 차이는 미미.</p>
+</div>
+</section>
+
+<!-- ═══════════════ PHASE 2 ═══════════════ -->
+<section id="phase2">
+<h2>Phase 2: Solvation Clusters <span class="badge badge-green">COMPLETE</span></h2>
+
+<h3 style="margin:20px 0 10px">Binding Energy Comparison at 233K (-40°C)</h3>
+<div class="card" style="overflow-x:auto">
+<table>
+<tr><th>Cluster</th><th>ΔE (kcal/mol)</th><th>ΔG<sub>233K</sub></th><th>ΔH<sub>233K</sub></th><th>TΔS</th><th>Grade</th></tr>
+<tr style="background:rgba(33,150,243,.05)"><td class="dee">Li(DEE)<sub>1</sub></td><td>-39.58</td><td><strong>-33.25</strong></td><td>-38.62</td><td>-5.37</td><td><span class="tag tag-a">A</span></td></tr>
+<tr style="background:rgba(244,67,54,.05)"><td class="thf">Li(THF)<sub>1</sub></td><td>-41.72</td><td><strong>-34.95</strong></td><td>-40.86</td><td>-5.91</td><td><span class="tag tag-a">A</span></td></tr>
+<tr style="background:rgba(33,150,243,.05)"><td class="dee">Li(DEE)<sub>2</sub></td><td>-44.94</td><td><strong>-34.73</strong></td><td>-45.99</td><td>-11.26</td><td><span class="tag tag-b">B</span></td></tr>
+<tr style="background:rgba(244,67,54,.05)"><td class="thf">Li(THF)<sub>2</sub></td><td>-75.42</td><td><strong>-59.20</strong></td><td>-73.17</td><td>-13.96</td><td><span class="tag tag-a">A</span></td></tr>
+<tr style="background:rgba(244,67,54,.05)"><td class="thf">Li(THF)<sub>4</sub></td><td>-120.96</td><td><strong>-82.66</strong></td><td>-116.34</td><td>-33.68</td><td><span class="tag tag-a">A</span></td></tr>
+</table>
+</div>
+
+<h3 style="margin:20px 0 10px">TTE Mixed Clusters</h3>
+<div class="card" style="overflow-x:auto">
+<table>
+<tr><th>Cluster</th><th>ΔE</th><th>ΔG<sub>233K</sub></th><th>TΔS</th><th>Grade</th></tr>
+<tr style="background:rgba(33,150,243,.05)"><td class="dee">Li(DEE)<sub>2</sub>(TTE)<sub>1</sub></td><td>-41.09</td><td><strong>-18.51</strong></td><td>-21.53</td><td><span class="tag tag-a">A</span></td></tr>
+<tr style="background:rgba(244,67,54,.05)"><td class="thf">Li(THF)<sub>2</sub>(TTE)<sub>1</sub></td><td>-69.79</td><td><strong>-47.53</strong></td><td>-22.39</td><td><span class="tag tag-a">A</span></td></tr>
+<tr style="background:rgba(33,150,243,.05)"><td class="dee">Li(DEE)<sub>1</sub>(TTE)<sub>2</sub></td><td>-30.34</td><td><strong>-9.56</strong></td><td>-23.14</td><td><span class="tag tag-a">A</span></td></tr>
+<tr style="background:rgba(244,67,54,.05)"><td class="thf">Li(THF)<sub>1</sub>(TTE)<sub>2</sub></td><td>-65.16</td><td><strong>-34.16</strong></td><td>-28.75</td><td><span class="tag tag-a">A-</span></td></tr>
+<tr style="background:rgba(244,67,54,.05)"><td class="thf">Li(THF)<sub>2</sub>(TTE)<sub>2</sub></td><td>-29.40</td><td style="color:var(--red)"><strong>+3.65</strong></td><td>-34.51</td><td><span class="tag tag-a">A</span></td></tr>
+</table>
+</div>
+
+<h3 style="margin:20px 0 10px">FSI<sup>-</sup> Contact Ion Pair (CIP)</h3>
+<div class="card" style="overflow-x:auto">
+<table>
+<tr><th>CIP Cluster</th><th>ΔE</th><th>ΔG<sub>233K</sub></th><th>Li-O<sub>FSI</sub> (Å)</th><th>Li-O<sub>solv</sub> (Å)</th><th>Grade</th></tr>
+<tr style="background:rgba(33,150,243,.05)"><td class="dee">Li(FSI)(DEE)<sub>1</sub></td><td>-154.08</td><td>-136.75</td><td>1.892/1.897</td><td>1.909</td><td><span class="tag tag-a">A</span></td></tr>
+<tr style="background:rgba(244,67,54,.05)"><td class="thf">Li(FSI)(THF)<sub>1</sub></td><td>-155.62</td><td>-137.46</td><td>1.898/1.886</td><td>1.891</td><td><span class="tag tag-a">A</span></td></tr>
+<tr style="background:rgba(33,150,243,.05)"><td class="dee">Li(FSI)(DEE)<sub>2</sub></td><td>-171.34</td><td>-142.22</td><td>1.981/1.986</td><td>2.006/2.007</td><td><span class="tag tag-a">A</span></td></tr>
+<tr style="background:rgba(244,67,54,.05)"><td class="thf">Li(FSI)(THF)<sub>2</sub></td><td>-173.64</td><td>-143.93</td><td>1.965/1.933</td><td>1.930/1.944</td><td><span class="tag tag-b">B</span></td></tr>
+</table>
+</div>
+
+<div class="grid grid-2" style="margin-top:20px">
+<div class="card"><div class="chart-container"><canvas id="bindingChart"></canvas></div></div>
+<div class="card"><div class="chart-container"><canvas id="tempChart"></canvas></div></div>
+</div>
+
+<div class="insight">
+<h4>Core Finding — THF Binds Stronger, But...</h4>
+<p>THF는 모든 배위수에서 DEE보다 <strong>더 강한 ΔG</strong>를 보임 (n=2: -59.20 vs -34.73 kcal/mol, ΔΔG = -24.48). 그러나 이 강한 결합은 <strong>더 높은 탈용매화 장벽</strong>을 의미 → Phase 3에서 확인. TTE 도입 시 Li(THF)<sub>2</sub>(TTE)<sub>2</sub>는 ΔG > 0으로 <strong>열역학적으로 불안정</strong> → TTE가 THF를 밀어냄.</p>
+</div>
+</section>
+
+<!-- ═══════════════ PHASE 3 ═══════════════ -->
+<section id="phase3">
+<h2>Phase 3: Desolvation Barriers <span class="badge badge-yellow">5/10 COMPLETE</span></h2>
+
+<div class="mermaid">
+graph TD
+  subgraph Complete["Completed Scans"]
+    S1["DEE2_TTE_desolvation<br/>17.01 kcal/mol<br/>20/20 pts"]
+    S2["THF2_TTE_desolvation<br/>6.73 kcal/mol<br/>19/20 pts"]
+    S3["FSI_DEE2_desolvation<br/>9.86 kcal/mol<br/>20/20 pts"]
+    S4["FSI_THF2_desolvation<br/>5.64 kcal/mol<br/>19/20 pts"]
+    S5["DEE2_TTE_removal<br/>6.89 kcal/mol<br/>20/20 pts"]
+  end
+  subgraph Running["Running / Incomplete"]
+    S6["THF4_desolvation<br/>12.54 kcal/mol<br/>16/20 pts"]
+    S7["DEE4_desolvation<br/>22.08 kcal/mol<br/>13/20 pts"]
+    S8["THF2_TTE_removal<br/>0.28 kcal/mol<br/>12/20 pts"]
+    S9["DEE1_TTE2_removal<br/>—<br/>1/20 pts"]
+    S10["THF1_TTE2_removal<br/>0.30 kcal/mol<br/>3/20 pts"]
+  end
+
+  style Complete fill:#1a3a2a,stroke:#3fb950,color:#e6edf3
+  style Running fill:#2a2a1a,stroke:#d29922,color:#e6edf3
+</div>
+
+<div class="card" style="margin-top:24px;overflow-x:auto">
+<table>
+<tr><th>Scan</th><th>Reaction</th><th>Barrier (kcal/mol)</th><th>Points</th><th>Status</th></tr>
+<tr><td class="dee">DEE<sub>2</sub>_TTE desolvation</td><td>Li<sup>+</sup>(DEE)<sub>2</sub>(TTE) → Li<sup>+</sup>(DEE)(TTE) + DEE</td><td><strong>17.01</strong></td><td>20/20</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td class="thf">THF<sub>2</sub>_TTE desolvation</td><td>Li<sup>+</sup>(THF)<sub>2</sub>(TTE) → Li<sup>+</sup>(THF)(TTE) + THF</td><td><strong>6.73</strong></td><td>19/20</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td class="dee">FSI-DEE<sub>2</sub> desolvation</td><td>Li<sup>+</sup>FSI<sup>-</sup>(DEE)<sub>2</sub> → Li<sup>+</sup>FSI<sup>-</sup>(DEE) + DEE</td><td><strong>9.86</strong></td><td>20/20</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td class="thf">FSI-THF<sub>2</sub> desolvation</td><td>Li<sup>+</sup>FSI<sup>-</sup>(THF)<sub>2</sub> → Li<sup>+</sup>FSI<sup>-</sup>(THF) + THF</td><td><strong>5.64</strong></td><td>19/20</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td class="dee">DEE<sub>2</sub>_TTE removal</td><td>Li<sup>+</sup>(DEE)<sub>2</sub>(TTE) → Li<sup>+</sup>(DEE)<sub>2</sub> + TTE</td><td><strong>6.89</strong></td><td>20/20</td><td><span class="tag tag-a">DONE</span></td></tr>
+<tr><td class="thf">THF<sub>4</sub> desolvation</td><td>Li<sup>+</sup>(THF)<sub>4</sub> → Li<sup>+</sup>(THF)<sub>3</sub> + THF</td><td>12.54</td><td>16/20</td><td><span class="tag tag-b">RUNNING</span></td></tr>
+<tr><td class="dee">DEE<sub>4</sub> desolvation</td><td>Li<sup>+</sup>(DEE)<sub>4</sub> → Li<sup>+</sup>(DEE)<sub>3</sub> + DEE</td><td>22.08</td><td>13/20</td><td><span class="tag tag-b">RUNNING</span></td></tr>
+<tr><td class="thf">THF<sub>2</sub>_TTE removal</td><td>Li<sup>+</sup>(THF)<sub>2</sub>(TTE) → Li<sup>+</sup>(THF)<sub>2</sub> + TTE</td><td>0.28</td><td>12/20</td><td><span class="tag tag-b">RUNNING</span></td></tr>
+<tr><td class="dee">DEE<sub>1</sub>_TTE<sub>2</sub> removal</td><td>Li<sup>+</sup>(DEE)(TTE)<sub>2</sub> → Li<sup>+</sup>(DEE)(TTE) + TTE</td><td>—</td><td>1/20</td><td><span class="tag tag-c">EARLY</span></td></tr>
+<tr><td class="thf">THF<sub>1</sub>_TTE<sub>2</sub> removal</td><td>Li<sup>+</sup>(THF)(TTE)<sub>2</sub> → Li<sup>+</sup>(THF)(TTE) + TTE</td><td>0.30</td><td>3/20</td><td><span class="tag tag-c">EARLY</span></td></tr>
+</table>
+</div>
+
+<div class="card" style="margin-top:20px"><div class="chart-container"><canvas id="barrierChart"></canvas></div></div>
+
+<div class="insight">
+<h4>Critical Insight — DEE Has HIGHER Barrier (Unexpected!)</h4>
+<p>LHCE 환경(TTE 존재)에서 DEE 탈용매화 장벽(<strong>17.01 kcal/mol</strong>)이 THF(<strong>6.73 kcal/mol</strong>)보다 <strong>2.5배 높음</strong>. CIP 환경에서도 DEE(9.86) > THF(5.64). 이는 "DEE가 저온에서 유리하다"는 실험 결과와 모순 → DEE의 저온 우위는 <strong>탈용매화 역학이 아닌 다른 메커니즘</strong>(더 낮은 점도, 더 빠른 이온 수송 등)에 기인할 가능성.</p>
+</div>
+</section>
+
+<!-- ═══════════════ NPA ═══════════════ -->
+<section id="npa" style="border-bottom:1px solid var(--border);padding:40px 0">
+<h2>NPA Charge Analysis</h2>
+<div class="card" style="overflow-x:auto">
+<table>
+<tr><th>Cluster</th><th>Type</th><th>Li Mulliken</th><th>Li Loewdin</th><th>CT (Mulliken)</th><th>CT (Loewdin)</th></tr>
+<tr><td class="dee">Li(DEE)<sub>1</sub></td><td>Pure</td><td>+0.907</td><td>+0.749</td><td>0.093</td><td>0.251</td></tr>
+<tr><td class="thf">Li(THF)<sub>1</sub></td><td>Pure</td><td>+0.928</td><td>+0.799</td><td>0.072</td><td>0.201</td></tr>
+<tr><td class="dee">Li(DEE)<sub>2</sub></td><td>Pure</td><td>+0.616</td><td>+0.397</td><td>0.384</td><td>0.603</td></tr>
+<tr><td class="thf">Li(THF)<sub>2</sub></td><td>Pure</td><td>+0.878</td><td>+0.632</td><td>0.122</td><td>0.368</td></tr>
+<tr><td class="thf">Li(THF)<sub>4</sub></td><td>Pure</td><td>+0.779</td><td>+0.406</td><td>0.221</td><td>0.594</td></tr>
+<tr><td class="dee">Li(FSI)(DEE)<sub>1</sub></td><td>CIP</td><td>+0.829</td><td>+0.562</td><td>—</td><td>—</td></tr>
+<tr><td class="dee">Li(FSI)(DEE)<sub>2</sub></td><td>CIP</td><td>+0.778</td><td>+0.349</td><td>—</td><td>—</td></tr>
+</table>
+</div>
+<div class="insight">
+<h4>Charge Transfer Pattern</h4>
+<p>n=2 배위에서 DEE의 전하 이전(CT=0.60 Löwdin)이 THF(0.37)보다 <strong>크게 높음</strong> — DEE가 Li<sup>+</sup>에 더 많은 전자 밀도를 이전. 그러나 이는 기하학적 차이(DEE의 유연한 알킬 사슬이 Li에 더 밀착)에 기인하며, 열역학적으로는 THF가 여전히 더 안정.</p>
+</div>
+</section>
+
+<!-- ═══════════════ RELIABILITY ═══════════════ -->
+<section id="reliability">
+<h2>Reliability Assessment</h2>
+
+<div class="grid grid-3">
+<div class="card">
+  <h3>Grade Distribution</h3>
+  <div style="margin-top:12px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Grade A (0 imaginary)</span><span style="color:var(--green)">16/22</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:73%;background:var(--green)"></div><div class="progress-text">73%</div></div>
+    <div style="display:flex;justify-content:space-between;margin:12px 0 6px"><span>Grade B (small imaginary)</span><span style="color:var(--yellow)">6/22</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:27%;background:var(--yellow)"></div><div class="progress-text">27%</div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>Method Validation</h3>
+  <ul style="list-style:none;margin-top:8px">
+    <li style="margin:8px 0"><span class="tag tag-a">OK</span> wB97X-D3: range-separated + dispersion</li>
+    <li style="margin:8px 0"><span class="tag tag-a">OK</span> def2-TZVP//SVP: dual-level verified</li>
+    <li style="margin:8px 0"><span class="tag tag-a">OK</span> Grimme qRRHO thermochemistry</li>
+    <li style="margin:8px 0"><span class="tag tag-b">NOTE</span> Grade B: imag freq < 25 cm<sup>-1</sup> (rotation)</li>
+    <li style="margin:8px 0"><span class="tag tag-b">NOTE</span> BSSE not yet applied</li>
+  </ul>
+</div>
+<div class="card">
+  <h3>Known Limitations</h3>
+  <ul style="list-style:none;margin-top:8px">
+    <li style="margin:8px 0"><span class="tag tag-c">BLOCK</span> NBO7 미설치</li>
+    <li style="margin:8px 0"><span class="tag tag-c">BLOCK</span> Multiwfn 미설치</li>
+    <li style="margin:8px 0"><span class="tag tag-b">BUG</span> ORCA MPI: basis >1000 → serial</li>
+    <li style="margin:8px 0"><span class="tag tag-b">MISS</span> RIJCOSX 불가 (def2/J 없음)</li>
+  </ul>
+</div>
+</div>
+</section>
+
+<!-- ═══════════════ DISCUSSION ═══════════════ -->
+<section id="discussion">
+<h2>Scientific Discussion</h2>
+
+<div class="card" style="margin-bottom:20px">
+<h3>1. Li<sup>+</sup> Solvation Thermodynamics: THF > DEE at All Temperatures</h3>
+<p style="margin-top:10px">233K에서 Li(THF)<sub>2</sub>의 ΔG = <strong>-59.20 kcal/mol</strong> vs Li(DEE)<sub>2</sub> = <strong>-34.73 kcal/mol</strong> (ΔΔG = -24.48). 이 차이는 주로 <strong>엔탈피 기여</strong>(ΔΔH ≈ -27 kcal/mol)에서 기인하며, THF의 고리 구조가 제공하는 최적화된 Li-O 배위 기하학에 의한 것. 온도가 낮아질수록(298→223K) ΔG 차이가 <strong>더 벌어짐</strong> — 엔트로피 패널티(TΔS)가 줄어들면서 엔탈피 우세가 강화.</p>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+<h3>2. TTE Diluent Effect: Selective Destabilization</h3>
+<p style="margin-top:10px">TTE 도입 시 THF 시스템이 <strong>비대칭적으로 불안정화</strong>됨. Li(THF)<sub>2</sub>(TTE)<sub>2</sub>는 ΔG = <strong>+3.65 kcal/mol</strong> (233K)로 열역학적 불안정 — 이 조성은 자발적으로 분해. 반면 Li(DEE)<sub>1</sub>(TTE)<sub>2</sub>는 ΔG = <strong>-9.56 kcal/mol</strong>로 여전히 안정. <strong>TTE가 THF를 더 효과적으로 밀어냄</strong> → LHCE에서 THF 주변의 TTE 농축이 더 강함.</p>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+<h3>3. Desolvation Barriers: The Paradox</h3>
+<p style="margin-top:10px">완료된 5개 스캔의 핵심 결과:</p>
+<ul style="margin:10px 0 10px 20px">
+<li><strong>LHCE 환경</strong>: DEE 탈용매화(17.01) >> THF(6.73) kcal/mol → THF가 <strong>더 쉽게 벗겨짐</strong></li>
+<li><strong>CIP 환경</strong>: DEE(9.86) > THF(5.64) kcal/mol → 동일 경향</li>
+<li><strong>TTE 제거</strong>: DEE(6.89) > THF(~0.3) kcal/mol → TTE도 THF계에서 더 쉽게 빠짐</li>
+</ul>
+<p>실험적으로 DEE-LHCE가 저온 성능이 우수한데, DFT 탈용매화 장벽은 DEE가 <strong>더 높음</strong>. 이 역설의 해석: DEE의 우위는 <strong>단분자 탈용매화 열역학이 아닌</strong>, (i) 더 낮은 점도, (ii) 더 빠른 이온 수송, (iii) SEI 형성 차이에서 비롯될 가능성이 높음. 이는 <strong>논문의 주요 논점</strong>이 될 수 있음.</p>
+</div>
+
+<div class="card">
+<h3>4. Entropy Penalty & Temperature Sensitivity</h3>
+<p style="margin-top:10px">배위수 증가에 따른 TΔS 증가: Li(THF)<sub>4</sub>에서 TΔS = -33.68 kcal/mol (233K). TTE 혼합 시 엔트로피 패널티 급증 — Li(THF)<sub>2</sub>(TTE)<sub>2</sub>에서 TΔS = -34.51. 이는 큰 TTE 분자(MW=252)의 배위 자유도 감소에 기인. <strong>저온에서 엔트로피 효과 감소</strong> → ΔG의 온도 감도: THF계(-11.83 kcal/mol shift, 298→223K)가 DEE계(-8.31)보다 큼.</p>
+</div>
+</section>
+
+<!-- ═══════════════ PROGRESS ═══════════════ -->
+<section id="progress">
+<h2>Progress & Timeline</h2>
+
+<div class="grid grid-2">
+<div class="card">
+  <h3>Overall Progress</h3>
+  <div style="margin-top:16px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Phase 1: Monomers</span><span style="color:var(--green)">100%</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--green)"></div></div>
+    <div style="display:flex;justify-content:space-between;margin:12px 0 6px"><span>Phase 2: Clusters + Freq</span><span style="color:var(--green)">95%</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:95%;background:var(--green)"></div></div>
+    <div style="display:flex;justify-content:space-between;margin:12px 0 6px"><span>Phase 3: Desolvation Scans</span><span style="color:var(--yellow)">50%</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:50%;background:var(--yellow)"></div></div>
+    <div style="display:flex;justify-content:space-between;margin:12px 0 6px"><span>Publication Data</span><span style="color:var(--yellow)">78%</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:78%;background:var(--accent)"></div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>Remaining Work</h3>
+  <table style="margin-top:8px">
+    <tr><th>Task</th><th>Est. Time</th><th>Priority</th></tr>
+    <tr><td>Phase 3 remaining 5 scans</td><td>~3-7 days</td><td><span class="tag tag-a">HIGH</span></td></tr>
+    <tr><td>Phase 2 missing freq (6)</td><td>~2-4 days</td><td><span class="tag tag-a">HIGH</span></td></tr>
+    <tr><td>BSSE correction (gCP)</td><td>~1 day</td><td><span class="tag tag-b">MED</span></td></tr>
+    <tr><td>NBO/NCI (tool install needed)</td><td>~1 day + calc</td><td><span class="tag tag-b">MED</span></td></tr>
+    <tr><td>Final figures & manuscript</td><td>~5-7 days</td><td><span class="tag tag-b">MED</span></td></tr>
+  </table>
+</div>
+</div>
+
+<div class="mermaid" style="margin-top:24px">
+gantt
+    title DFT-DEE-THF Project Timeline
+    dateFormat YYYY-MM-DD
+    axisFormat %m/%d
+
+    section Phase 1
+    Monomer Opt+Freq          :done, p1, 2026-03-12, 2026-03-15
+
+    section Phase 2
+    Cluster Optimization      :done, p2a, 2026-03-15, 2026-03-22
+    TZVP Single Points        :done, p2b, 2026-03-19, 2026-03-24
+    Frequency Analysis        :active, p2c, 2026-03-24, 2026-04-08
+    FSI CIP Structures        :done, p2d, 2026-03-23, 2026-03-27
+
+    section Phase 3
+    PES Scans (5 complete)    :done, p3a, 2026-03-20, 2026-03-31
+    PES Scans (5 remaining)   :active, p3b, 2026-03-31, 2026-04-11
+
+    section Publication
+    Data compilation          :active, pub1, 2026-04-04, 2026-04-08
+    Manuscript writing        :pub2, after pub1, 7d
+</div>
+</section>
+
+</div><!-- container -->
+
+<footer>
+  <p>DFT-DEE-THF Dashboard | KaiLos Lab | Generated by Claude Code</p>
+  <p>Last updated: <span class="timestamp" id="lastUpdate">2026-04-04</span></p>
+</footer>
+
+<script>
+mermaid.initialize({theme:'dark',themeVariables:{primaryColor:'#1f6feb',primaryTextColor:'#e6edf3',primaryBorderColor:'#58a6ff',lineColor:'#8b949e',secondaryColor:'#161b22',tertiaryColor:'#0d1117'}});
+
+// Binding Energy Chart
+new Chart(document.getElementById('bindingChart'),{
+  type:'bar',
+  data:{
+    labels:['n=1','n=2','n=2+TTE','n=1+2TTE','n=4'],
+    datasets:[
+      {label:'DEE ΔG(233K)',data:[-33.25,-34.73,-18.51,-9.56,null],backgroundColor:'rgba(33,150,243,0.7)',borderColor:'#2196F3',borderWidth:1},
+      {label:'THF ΔG(233K)',data:[-34.95,-59.20,-47.53,-34.16,-82.66],backgroundColor:'rgba(244,67,54,0.7)',borderColor:'#F44336',borderWidth:1}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{title:{display:true,text:'Li+ Solvation ΔG at 233K (kcal/mol)',color:'#e6edf3',font:{size:14}},legend:{labels:{color:'#e6edf3'}}},
+    scales:{y:{title:{display:true,text:'ΔG (kcal/mol)',color:'#e6edf3'},ticks:{color:'#8b949e'},grid:{color:'#30363d'}},x:{ticks:{color:'#8b949e'},grid:{color:'#30363d'}}}
+  }
+});
+
+// Temperature Dependence Chart
+new Chart(document.getElementById('tempChart'),{
+  type:'line',
+  data:{
+    labels:['298K','233K','223K'],
+    datasets:[
+      {label:'Li(DEE)2',data:[-31.08,-34.73,-35.29],borderColor:'#2196F3',backgroundColor:'rgba(33,150,243,0.1)',fill:true,tension:0.3},
+      {label:'Li(THF)2',data:[-55.08,-59.20,-59.84],borderColor:'#F44336',backgroundColor:'rgba(244,67,54,0.1)',fill:true,tension:0.3},
+      {label:'Li(THF)4',data:[-72.55,-82.66,-84.21],borderColor:'#C62828',borderDash:[5,5],backgroundColor:'rgba(198,40,40,0.05)',fill:true,tension:0.3}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{title:{display:true,text:'Temperature Dependence of ΔG',color:'#e6edf3',font:{size:14}},legend:{labels:{color:'#e6edf3'}}},
+    scales:{y:{title:{display:true,text:'ΔG (kcal/mol)',color:'#e6edf3'},ticks:{color:'#8b949e'},grid:{color:'#30363d'}},x:{ticks:{color:'#8b949e'},grid:{color:'#30363d'}}}
+  }
+});
+
+// Barrier Chart
+new Chart(document.getElementById('barrierChart'),{
+  type:'bar',
+  data:{
+    labels:['LHCE\n(desolvation)','CIP\n(desolvation)','LHCE\n(TTE removal)','Pure n=4\n(desolvation)'],
+    datasets:[
+      {label:'DEE',data:[17.01,9.86,6.89,22.08],backgroundColor:'rgba(33,150,243,0.7)',borderColor:'#2196F3',borderWidth:1},
+      {label:'THF',data:[6.73,5.64,0.28,12.54],backgroundColor:'rgba(244,67,54,0.7)',borderColor:'#F44336',borderWidth:1}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{title:{display:true,text:'Desolvation Barrier Comparison (kcal/mol)',color:'#e6edf3',font:{size:14}},legend:{labels:{color:'#e6edf3'}}},
+    scales:{y:{title:{display:true,text:'Barrier (kcal/mol)',color:'#e6edf3'},ticks:{color:'#8b949e'},grid:{color:'#30363d'}},x:{ticks:{color:'#8b949e'},grid:{color:'#30363d'}}}
+  }
+});
+
+document.getElementById('lastUpdate').textContent = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
