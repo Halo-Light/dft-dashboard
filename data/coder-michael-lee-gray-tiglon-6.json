@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "server_id": "coder-michael-lee-gray-tiglon-6",
+    "updated": "2026-04-05T14:30:00+09:00",
+    "running_orca": 0
+  },
+  "phase1": [
+    { "name": "Li+", "e": -7.289727, "zpe": 0.00, "dipole": 0.000, "homo": -66.65, "lumo": -5.30, "gap": 61.35 },
+    { "name": "DEE", "e": -233.688865, "zpe": 86.23, "dipole": 1.085, "homo": -9.53, "lumo": 3.25, "gap": 12.78 },
+    { "name": "THF", "e": -232.477210, "zpe": 74.03, "dipole": 1.618, "homo": -9.53, "lumo": 3.15, "gap": 12.68 },
+    { "name": "FSI-", "e": -1351.926854, "zpe": 19.88, "dipole": 0.421, "homo": -6.49, "lumo": 7.26, "gap": 13.75 },
+    { "name": "TTE", "e": -1067.098911, "zpe": 65.89, "dipole": 1.249, "homo": -12.22, "lumo": 2.89, "gap": 15.11 }
+  ],
+  "phase2_pure": [
+    { "label": "Li(DEE)1", "cls": "dee", "dE": -39.58, "dE_ZPE": -38.11, "dH": -38.62, "dG": -33.25, "TdS": -5.37, "grade": "A", "notes": "0 imag" },
+    { "label": "Li(DEE)2", "cls": "dee", "dE": -44.94, "dE_ZPE": -47.09, "dH": -45.99, "dG": -34.73, "TdS": -11.26, "grade": "B", "notes": "1 imag (-25 cm-1)" },
+    { "label": "Li(THF)1", "cls": "thf", "dE": -41.72, "dE_ZPE": -40.28, "dH": -40.86, "dG": -34.95, "TdS": -5.91, "grade": "A", "notes": "0 imag (reopt)" },
+    { "label": "Li(THF)2", "cls": "thf", "dE": -75.42, "dE_ZPE": -72.87, "dH": -73.17, "dG": -59.20, "TdS": -13.96, "grade": "A", "notes": "0 imag (reopt)" },
+    { "label": "Li(THF)4", "cls": "thf", "dE": -120.96, "dE_ZPE": -116.30, "dH": -116.34, "dG": -82.66, "TdS": -33.68, "grade": "A", "notes": "0 imag" }
+  ],
+  "phase2_tte": [
+    { "label": "Li(THF)1(TTE)1", "cls": "thf", "dE": -71.14, "dE_ZPE": -68.95, "dH": -69.82, "dG": -53.32, "TdS": -16.50, "grade": "B", "notes": "1 imag (-8.5 cm-1)" },
+    { "label": "Li(THF)2(TTE)1", "cls": "thf", "dE": -69.79, "dE_ZPE": -71.41, "dH": -69.92, "dG": -47.53, "TdS": -22.39, "grade": "A", "notes": "0 imag" },
+    { "label": "Li(THF)1(TTE)2", "cls": "thf", "dE": -65.16, "dE_ZPE": -62.37, "dH": -62.91, "dG": -34.16, "TdS": -28.75, "grade": "A-", "notes": "1 imag (-6.6 cm-1)" },
+    { "label": "Li(THF)2(TTE)2", "cls": "thf", "dE": -29.40, "dE_ZPE": -32.93, "dH": -30.85, "dG": 3.65, "TdS": -34.51, "grade": "A", "notes": "0 imag, dG > 0" },
+    { "label": "Li(DEE)2(TTE)1", "cls": "dee", "dE": -41.09, "dE_ZPE": -41.67, "dH": -40.04, "dG": -18.51, "TdS": -21.53, "grade": "A", "notes": "0 imag" },
+    { "label": "Li(DEE)1(TTE)2", "cls": "dee", "dE": -30.34, "dE_ZPE": -34.53, "dH": -32.70, "dG": -9.56, "TdS": -23.14, "grade": "A", "notes": "0 imag" }
+  ],
+  "phase2_cip": [
+    { "label": "Li(FSI)(DEE)1", "cls": "dee", "dE": -154.08, "dG": -136.75, "li_o_fsi": "1.892 / 1.897", "li_o_solv": "1.909", "grade": "A" },
+    { "label": "Li(FSI)(DEE)2", "cls": "dee", "dE": -171.34, "dG": -142.22, "li_o_fsi": "1.981 / 1.986", "li_o_solv": "2.006 / 2.007", "grade": "A" },
+    { "label": "Li(FSI)(THF)1", "cls": "thf", "dE": -155.62, "dG": -137.46, "li_o_fsi": "1.898 / 1.886", "li_o_solv": "1.891", "grade": "A" },
+    { "label": "Li(FSI)(THF)2", "cls": "thf", "dE": -173.64, "dG": -143.93, "li_o_fsi": "1.965 / 1.933", "li_o_solv": "1.930 / 1.944", "grade": "B" }
+  ],
+  "phase2_ddg": [
+    { "cat": "Solvation", "pair": "n=1", "dG_dee": -33.25, "dG_thf": -34.95, "ddG": -1.69, "interp": "THF slightly stronger" },
+    { "cat": "Solvation", "pair": "n=2", "dG_dee": -34.73, "dG_thf": -59.20, "ddG": -24.48, "interp": "THF much stronger" },
+    { "cat": "TTE mixed", "pair": "n=2, m=1 TTE", "dG_dee": -18.51, "dG_thf": -47.53, "ddG": -29.02, "interp": "THF much stronger" },
+    { "cat": "TTE mixed", "pair": "n=1, m=2 TTE", "dG_dee": -9.56, "dG_thf": -34.16, "ddG": -24.61, "interp": "THF much stronger" },
+    { "cat": "CIP", "pair": "n=1 CIP", "dG_dee": -136.75, "dG_thf": -137.46, "ddG": -0.71, "interp": "Nearly equal (FSI- dominates)" },
+    { "cat": "CIP", "pair": "n=2 CIP", "dG_dee": -142.22, "dG_thf": -143.93, "ddG": -1.71, "interp": "Nearly equal (FSI- dominates)" }
+  ],
+  "phase2_excluded": [
+    { "name": "Li(DEE)3", "dE": 19.81, "reason": "Only 1/3 DEE coordinates (steric failure)" },
+    { "name": "Li(DEE)4", "dE": 66.24, "reason": "Only 2/4 DEE coordinates (steric failure)" },
+    { "name": "Li(THF)3", "dE": -25.83, "reason": "Only 2/3 THF coordinates" },
+    { "name": "Li(DEE)1(TTE)1", "dE": 45.85, "reason": "Fully dissociated (Li-O = 6.6 A)" },
+    { "name": "Li(DEE)2(TTE)2", "dE": 59.83, "reason": "Steric failure" }
+  ],
+  "phase3_barriers": [
+    { "name": "DEE2-TTE desolvation", "cls": "dee", "reaction": "Li+(DEE)2(TTE) -> Li+(DEE)(TTE) + DEE", "points": "20/20", "status": "COMPLETE", "barrier": 17.04 },
+    { "name": "THF2-TTE desolvation", "cls": "thf", "reaction": "Li+(THF)2(TTE) -> Li+(THF)(TTE) + THF", "points": "19/20", "status": "COMPLETE", "barrier": 6.73 },
+    { "name": "FSI-DEE2 desolvation", "cls": "dee", "reaction": "Li+FSI-(DEE)2 -> Li+FSI-(DEE) + DEE", "points": "20/20", "status": "COMPLETE", "barrier": 9.86 },
+    { "name": "FSI-THF2 desolvation", "cls": "thf", "reaction": "Li+FSI-(THF)2 -> Li+FSI-(THF) + THF", "points": "20/20", "status": "COMPLETE", "barrier": 7.76 },
+    { "name": "DEE2-TTE removal", "cls": "dee", "reaction": "Li+(DEE)2(TTE) -> Li+(DEE)2 + TTE", "points": "20/20", "status": "COMPLETE", "barrier": 8.72 },
+    { "name": "THF4 desolvation", "cls": "thf", "reaction": "Li+(THF)4 -> Li+(THF)3 + THF", "points": "20/20", "status": "COMPLETE", "barrier": 13.90 },
+    { "name": "DEE4 desolvation", "cls": "dee", "reaction": "Li+(DEE)4 -> Li+(DEE)3 + DEE", "points": "20/20", "status": "COMPLETE", "barrier": 22.14 },
+    { "name": "THF2-TTE removal", "cls": "thf", "reaction": "Li+(THF)2(TTE) -> Li+(THF)2 + TTE", "points": "20/20", "status": "COMPLETE", "barrier": 6.16 },
+    { "name": "DEE1-TTE2 removal", "cls": "dee", "reaction": "Li+(DEE)(TTE)2 -> Li+(DEE)(TTE) + TTE", "points": "1/20", "status": "ERROR", "barrier": null },
+    { "name": "THF1-TTE2 removal", "cls": "thf", "reaction": "Li+(THF)(TTE)2 -> Li+(THF)(TTE) + TTE", "points": "3/20", "status": "RUNNING", "barrier": 0.67 }
+  ],
+  "phase3_pes": {
+    "DEE2_TTE_desol": {
+      "label": "DEE2-TTE desol", "color": "#2196F3", "fill": true, "dash": false,
+      "data": [[1.80,0.00],[2.02,-0.03],[2.24,2.52],[2.46,4.93],[2.68,7.17],[2.91,8.96],[3.13,10.34],[3.35,11.24],[3.57,11.98],[3.79,11.53],[4.01,11.81],[4.23,12.14],[4.45,12.51],[4.67,13.00],[4.89,13.67],[5.12,14.45],[5.34,15.33],[5.56,15.85],[5.78,16.40],[6.00,17.01]]
+    },
+    "THF2_TTE_desol": {
+      "label": "THF2-TTE desol", "color": "#F44336", "fill": true, "dash": false,
+      "data": [[1.80,0.00],[2.02,0.13],[2.24,2.41],[2.46,3.35],[2.68,5.12],[2.91,2.90],[3.14,3.57],[3.38,4.09],[3.62,4.25],[3.86,4.39],[4.10,4.56],[4.33,4.84],[4.57,5.23],[4.81,5.77],[5.05,5.89],[5.29,6.22],[5.52,6.41],[5.76,6.52],[6.00,6.73]]
+    },
+    "FSI_DEE2_desol": {
+      "label": "FSI-DEE2 desol", "color": "#64B5F6", "fill": false, "dash": true,
+      "data": [[3.80,0.00],[4.02,0.23],[4.24,0.84],[4.46,1.79],[4.68,2.32],[4.91,3.67],[5.13,5.12],[5.35,6.36],[5.57,7.39],[5.79,8.24],[5.90,8.29],[6.13,8.67],[6.37,9.03],[6.60,9.43],[6.83,9.86],[7.07,7.55],[7.30,7.90],[7.53,8.20],[7.77,8.28],[8.00,8.38]]
+    },
+    "FSI_THF2_desol": {
+      "label": "FSI-THF2 desol", "color": "#EF9A9A", "fill": false, "dash": true,
+      "data": [[1.80,0.00],[2.02,-2.12],[2.24,-1.71],[2.46,-0.61],[2.68,0.51],[2.91,1.50],[3.13,2.32],[3.35,2.99],[3.57,3.48],[3.79,3.88],[4.01,4.17],[4.23,4.40],[4.45,4.55],[4.74,4.73],[4.99,4.89],[5.24,5.02],[5.50,5.20],[5.75,5.41],[6.00,5.64]]
+    },
+    "DEE2_TTE_removal": {
+      "label": "DEE2-TTE removal", "color": "#FF9800", "fill": false, "dash": false,
+      "data": [[3.50,0.00],[3.74,-1.83],[3.97,-1.54],[4.21,-0.84],[4.45,-0.19],[4.68,0.40],[4.92,0.23],[5.16,1.17],[5.39,-0.11],[5.63,0.87],[5.87,1.97],[6.11,2.90],[6.34,3.75],[6.58,4.37],[6.82,4.72],[7.05,4.95],[7.29,5.36],[7.53,5.91],[7.76,6.26],[8.00,6.89]]
+    },
+    "THF4_desol": {
+      "label": "THF4 desol", "color": "#E57373", "fill": false, "dash": false,
+      "data": [[1.80,0.00],[2.02,-0.63],[2.24,1.23],[2.46,3.54],[2.68,5.60],[2.91,6.59],[3.13,7.55],[3.35,8.14],[3.57,8.73],[3.79,9.25],[4.01,9.88],[4.23,10.18],[4.45,10.85],[4.67,11.57],[4.89,12.54],[5.12,12.06],[5.37,11.61],[5.58,12.12],[5.79,12.76],[6.00,13.27]]
+    },
+    "DEE4_desol": {
+      "label": "DEE4 desol", "color": "#42A5F5", "fill": false, "dash": false,
+      "data": [[1.80,0.00],[2.02,-0.05],[2.24,2.65],[2.46,5.74],[2.68,8.63],[2.91,10.98],[3.13,12.92],[3.35,14.39],[3.57,15.63],[3.79,16.65],[4.01,17.54],[4.23,18.01],[4.45,22.08],[5.02,18.88],[5.27,19.35],[5.51,19.84],[5.76,20.51],[6.00,20.41]]
+    },
+    "THF2_TTE_removal": {
+      "label": "THF2-TTE removal", "color": "#FFAB91", "fill": false, "dash": true,
+      "data": [[3.40,0.00],[3.64,-0.11],[3.88,-1.79],[4.13,-1.54],[4.37,-3.22],[4.61,-2.91],[4.85,-2.29],[5.09,-1.62],[5.34,-1.01],[5.58,-0.43],[5.82,0.08],[6.06,0.28],[6.16,0.41],[6.42,0.86],[6.69,1.36],[6.95,1.93],[7.21,1.87],[7.47,2.21],[7.74,2.58],[8.00,2.94]]
+    }
+  },
+  "npa": [
+    { "name": "Li(DEE)1", "cls": "dee", "type": "Pure", "li_mull": 0.907, "li_low": 0.749, "ct_mull": 0.093, "ct_low": 0.251, "n_o": 1, "ct_note": null },
+    { "name": "Li(DEE)2", "cls": "dee", "type": "Pure", "li_mull": 0.616, "li_low": 0.397, "ct_mull": 0.384, "ct_low": 0.603, "n_o": 2, "ct_note": null },
+    { "name": "Li(THF)1", "cls": "thf", "type": "Pure", "li_mull": 0.928, "li_low": 0.799, "ct_mull": 0.072, "ct_low": 0.201, "n_o": 1, "ct_note": null },
+    { "name": "Li(THF)2", "cls": "thf", "type": "Pure", "li_mull": 0.878, "li_low": 0.632, "ct_mull": 0.122, "ct_low": 0.368, "n_o": 2, "ct_note": null },
+    { "name": "Li(THF)4", "cls": "thf", "type": "Pure", "li_mull": 0.779, "li_low": 0.406, "ct_mull": 0.221, "ct_low": 0.594, "n_o": 4, "ct_note": null },
+    { "name": "Li(FSI)(DEE)1", "cls": "dee", "type": "CIP", "li_mull": 0.829, "li_low": 0.562, "ct_mull": null, "ct_low": null, "n_o": 5, "ct_note": "FSI- dominated" },
+    { "name": "Li(FSI)(DEE)2", "cls": "dee", "type": "CIP", "li_mull": 0.778, "li_low": 0.349, "ct_mull": null, "ct_low": null, "n_o": 6, "ct_note": "FSI- dominated" },
+    { "name": "Li(FSI)(THF)1", "cls": "thf", "type": "CIP", "li_mull": 0.756, "li_low": 0.394, "ct_mull": null, "ct_low": null, "n_o": 5, "ct_note": "FSI- dominated, from property.txt" }
+  ],
+  "grades": { "A": 12, "A-": 1, "B": 3, "C": 0 },
+  "progress": { "phase1": [5, 5], "phase2": [17, 17], "phase3": [8, 10] }
+}
