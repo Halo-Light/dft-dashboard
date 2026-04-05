@@ -33,6 +33,16 @@ nav a { padding: 4px 10px; border-radius: 6px; font-size: 0.85em; color: var(--t
 nav a:hover { background: var(--bg3); color: var(--text); }
 nav .nav-title { font-weight: 600; color: var(--text); margin-right: 8px; font-size: 0.9em; }
 
+/* Server bar */
+#server-bar { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 16px; margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+#server-bar .nav-title { font-weight: 600; color: var(--text); margin-right: 8px; font-size: 0.9em; }
+.server-btn { padding: 4px 14px; border-radius: 6px; font-size: 0.85em; color: var(--text2);
+  background: transparent; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+  font-family: inherit; }
+.server-btn:hover { background: var(--bg3); color: var(--text); }
+.server-btn.active { background: rgba(88,166,255,0.15); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+
 /* Header */
 .header { background: linear-gradient(135deg, #161b22 0%, #1a2332 100%);
   border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
@@ -82,7 +92,7 @@ tr:hover td { background: rgba(88,166,255,0.04); }
 @media (max-width: 900px) { .chart-row { grid-template-columns: 1fr; } }
 
 /* Mermaid */
-.mermaid { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+.mermaid-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
   margin-bottom: 16px; overflow-x: auto; }
 
 /* Cards */
@@ -111,6 +121,11 @@ tr:hover td { background: rgba(88,166,255,0.04); }
 .excluded { opacity: 0.6; }
 .excluded td { text-decoration: line-through; }
 
+/* Loading / Error */
+.loading-msg { text-align: center; padding: 60px 20px; color: var(--text2); font-size: 1.1em; }
+.error-msg { text-align: center; padding: 40px 20px; color: var(--fail); font-size: 1em;
+  background: rgba(248,81,73,0.08); border: 1px solid rgba(248,81,73,0.3); border-radius: 10px; margin: 24px 0; }
+
 /* Responsive */
 @media (max-width: 768px) {
   .container { padding: 8px; }
@@ -126,16 +141,21 @@ tr:hover td { background: rgba(88,166,255,0.04); }
 <body>
 <div class="container">
 
+<!-- SERVER BAR -->
+<div id="server-bar">
+  <span class="nav-title">Servers</span>
+</div>
+
 <!-- HEADER -->
 <div class="header">
   <h1>DFT-DEE-THF: Cyclic vs Linear Ether in LiFSI/TTE LHCE</h1>
   <div class="subtitle">Molecular-level comparison of THF (cyclic) vs DEE (linear) co-solvents for low-temperature Li-ion electrolytes</div>
   <div class="method">wB97X-D3 / def2-TZVP | RIJCOSX | TightSCF | Quasi-RRHO (298K, 233K, 223K)</div>
-  <div class="meta">
-    <span>Server: pitin (AMD EPYC 7763 x2, 96 cores, 1 TB RAM)</span>
+  <div class="meta" id="header-meta">
+    <span id="meta-server">Server: --</span>
     <span>ORCA 6.1.0</span>
-    <span class="running">2 scans running</span>
-    <span>Updated: 2026-04-05 13:55 KST</span>
+    <span class="running" id="meta-running">-- scans running</span>
+    <span id="meta-updated">Updated: --</span>
   </div>
 </div>
 
@@ -154,56 +174,13 @@ tr:hover td { background: rgba(88,166,255,0.04); }
   <a href="#progress">Progress</a>
 </nav>
 
-<!-- 1. OVERVIEW KPI -->
-<section id="overview">
-<h2>Overview</h2>
-<div class="kpi-grid">
-  <div class="kpi">
-    <div class="value" style="color:var(--success)">2 / 3</div>
-    <div class="label">Phases Complete</div>
-    <div class="sub">Phase 1-2 done, Phase 3 in progress</div>
-  </div>
-  <div class="kpi">
-    <div class="value" style="color:var(--accent)">16</div>
-    <div class="label">Optimized Structures</div>
-    <div class="sub">11 pure + 5 CIP (+ 5 excluded)</div>
-  </div>
-  <div class="kpi">
-    <div class="value" style="color:var(--tte)">10</div>
-    <div class="label">PES Scans</div>
-    <div class="sub">6 complete, 2 running, 2 early-stage</div>
-  </div>
-  <div class="kpi">
-    <div class="value">
-      <span style="color:var(--gradeA)">13</span><span style="color:var(--text3)">/</span><span style="color:var(--gradeB)">3</span>
-    </div>
-    <div class="label">Grade Distribution</div>
-    <div class="sub">A: 13 | A-: 1 | B: 2 | C: 0</div>
-  </div>
+<!-- DYNAMIC CONTENT CONTAINER -->
+<div id="dynamic-content">
+  <div class="loading-msg" id="loading-indicator">Loading dashboard data...</div>
 </div>
-</section>
 
-<!-- 2. PIPELINE -->
-<section id="pipeline">
-<h2>Pipeline <span class="badge" style="background:rgba(88,166,255,0.15);color:var(--accent)">Phase 3 Active</span></h2>
-<div class="mermaid">
-%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#21262d', 'edgeLabelBackground': '#161b22'}}}%%
-graph LR
-  P1["Phase 1<br/>Monomer Opt+Freq<br/><b>5/5 DONE</b>"] -->|ZPE, reference energies| P2
-  P2["Phase 2<br/>Solvation Clusters<br/><b>16/16 DONE</b>"] -->|Optimized geometries| P3
-  P3["Phase 3<br/>Desolvation PES<br/><b>8/10 done</b>"]
-
-  P2 -->|CIP structures| P2C["Phase 2 CIP<br/>FSI Contact Pairs<br/><b>5/5 DONE</b>"]
-
-  style P1 fill:#1a3a1a,stroke:#3fb950,color:#e6edf3
-  style P2 fill:#1a3a1a,stroke:#3fb950,color:#e6edf3
-  style P2C fill:#1a3a1a,stroke:#3fb950,color:#e6edf3
-  style P3 fill:#1a2a3a,stroke:#58a6ff,color:#e6edf3
-</div>
-</section>
-
-<!-- 3. DESCRIPTORS -->
-<section id="descriptors">
+<!-- STATIC: DESCRIPTORS -->
+<section id="descriptors" style="display:none">
 <h2>Publication Descriptors</h2>
 <div class="card">
 <h3>Confirmed (Phase 1-2)</h3>
@@ -232,251 +209,8 @@ graph LR
 </div>
 </section>
 
-<!-- 4. PHASE 1 -->
-<section id="phase1">
-<h2>Phase 1: Monomer Properties</h2>
-<table>
-<thead>
-  <tr><th>Molecule</th><th class="num">E (Eh)</th><th class="num">ZPE (kcal/mol)</th><th class="num">Dipole (D)</th><th class="num">HOMO (eV)</th><th class="num">LUMO (eV)</th><th class="num">Gap (eV)</th></tr>
-</thead>
-<tbody>
-  <tr><td>Li<sup>+</sup></td><td class="num">-7.2897</td><td class="num">0.00</td><td class="num">0.000</td><td class="num">-66.65</td><td class="num">-5.30</td><td class="num">61.35</td></tr>
-  <tr class="dee-row"><td>DEE</td><td class="num">-233.6889</td><td class="num">86.23</td><td class="num">1.085</td><td class="num">-9.53</td><td class="num">3.25</td><td class="num">12.78</td></tr>
-  <tr class="thf-row"><td>THF</td><td class="num">-232.4772</td><td class="num">74.03</td><td class="num">1.618</td><td class="num">-9.53</td><td class="num">3.15</td><td class="num">12.68</td></tr>
-  <tr class="fsi-row"><td>FSI<sup>-</sup></td><td class="num">-1351.9269</td><td class="num">19.88</td><td class="num">0.421</td><td class="num">-6.49</td><td class="num">7.26</td><td class="num">13.75</td></tr>
-  <tr class="tte-row"><td>TTE</td><td class="num">-1067.0989</td><td class="num">65.89</td><td class="num">1.249</td><td class="num">-12.22</td><td class="num">2.89</td><td class="num">15.11</td></tr>
-</tbody>
-</table>
-<p style="color:var(--text2);font-size:0.85em">THF dipole (1.62 D) > DEE (1.09 D): stronger electrostatic attraction to Li<sup>+</sup>. TTE has the largest gap (15.11 eV): electrochemical stability.</p>
-</section>
-
-<!-- 5. PHASE 2 -->
-<section id="phase2">
-<h2>Phase 2: Solvation Thermodynamics <span class="badge" style="background:rgba(63,185,80,0.15);color:var(--gradeA)">Complete</span></h2>
-
-<h3>Pure Solvation Clusters (233K / -40 C)</h3>
-<table>
-<thead>
-  <tr><th>Cluster</th><th class="num">dE</th><th class="num">dE_ZPE</th><th class="num">dH</th><th class="num">dG</th><th class="num">TdS</th><th>Grade</th><th>Notes</th></tr>
-</thead>
-<tbody>
-  <tr class="dee-row"><td>Li(DEE)<sub>1</sub></td><td class="num">-39.58</td><td class="num">-38.11</td><td class="num">-38.62</td><td class="num">-33.25</td><td class="num">-5.37</td><td><span class="grade grade-A">A</span></td><td>0 imag</td></tr>
-  <tr class="dee-row"><td>Li(DEE)<sub>2</sub></td><td class="num">-44.94</td><td class="num">-47.09</td><td class="num">-45.99</td><td class="num">-34.73</td><td class="num">-11.26</td><td><span class="grade grade-B">B</span></td><td>1 imag (-25 cm<sup>-1</sup>)</td></tr>
-  <tr class="thf-row"><td>Li(THF)<sub>1</sub></td><td class="num">-41.72</td><td class="num">-40.28</td><td class="num">-40.86</td><td class="num">-34.95</td><td class="num">-5.91</td><td><span class="grade grade-A">A</span></td><td>0 imag (reopt)</td></tr>
-  <tr class="thf-row"><td>Li(THF)<sub>2</sub></td><td class="num">-75.42</td><td class="num">-72.87</td><td class="num">-73.17</td><td class="num">-59.20</td><td class="num">-13.96</td><td><span class="grade grade-A">A</span></td><td>0 imag (reopt)</td></tr>
-  <tr class="thf-row"><td>Li(THF)<sub>4</sub></td><td class="num">-122.15</td><td class="num">-117.78</td><td class="num">-116.49</td><td class="num"><b>-90.57</b></td><td class="num">-25.93</td><td><span class="grade grade-A">A</span></td><td>0 imag (reopt)</td></tr>
-</tbody>
-</table>
-
-<h3>TTE Mixed Clusters (233K)</h3>
-<table>
-<thead>
-  <tr><th>Cluster</th><th class="num">dE</th><th class="num">dE_ZPE</th><th class="num">dH</th><th class="num">dG</th><th class="num">TdS</th><th>Grade</th><th>Notes</th></tr>
-</thead>
-<tbody>
-  <tr class="thf-row"><td>Li(THF)<sub>1</sub>(TTE)<sub>1</sub></td><td class="num">-71.14</td><td class="num">-68.95</td><td class="num">-69.82</td><td class="num">-53.32</td><td class="num">-16.50</td><td><span class="grade grade-B">B</span></td><td>1 imag (-8.5 cm<sup>-1</sup>)</td></tr>
-  <tr class="thf-row"><td>Li(THF)<sub>2</sub>(TTE)<sub>1</sub></td><td class="num">-69.79</td><td class="num">-71.41</td><td class="num">-69.92</td><td class="num">-47.53</td><td class="num">-22.39</td><td><span class="grade grade-A">A</span></td><td>0 imag</td></tr>
-  <tr class="thf-row"><td>Li(THF)<sub>1</sub>(TTE)<sub>2</sub></td><td class="num">-65.16</td><td class="num">-62.37</td><td class="num">-62.91</td><td class="num">-34.16</td><td class="num">-28.75</td><td><span class="grade grade-Am">A-</span></td><td>1 imag (-6.6 cm<sup>-1</sup>)</td></tr>
-  <tr class="thf-row"><td>Li(THF)<sub>2</sub>(TTE)<sub>2</sub></td><td class="num">-29.40</td><td class="num">-32.93</td><td class="num">-30.85</td><td class="num" style="color:var(--fail)">+3.65</td><td class="num">-34.51</td><td><span class="grade grade-A">A</span></td><td>0 imag, dG &gt; 0</td></tr>
-  <tr class="dee-row"><td>Li(DEE)<sub>2</sub>(TTE)<sub>1</sub></td><td class="num">-41.09</td><td class="num">-41.67</td><td class="num">-40.04</td><td class="num">-18.51</td><td class="num">-21.53</td><td><span class="grade grade-A">A</span></td><td>0 imag</td></tr>
-  <tr class="dee-row"><td>Li(DEE)<sub>1</sub>(TTE)<sub>2</sub></td><td class="num">-30.34</td><td class="num">-34.53</td><td class="num">-32.70</td><td class="num">-9.56</td><td class="num">-23.14</td><td><span class="grade grade-A">A</span></td><td>0 imag</td></tr>
-</tbody>
-</table>
-
-<h3>FSI<sup>-</sup> Contact Ion Pairs (CIP, 233K)</h3>
-<table>
-<thead>
-  <tr><th>Cluster</th><th class="num">dE</th><th class="num">dG</th><th>Li-O(FSI) (A)</th><th>Li-O(Solv) (A)</th><th>Grade</th></tr>
-</thead>
-<tbody>
-  <tr class="dee-row"><td>Li(FSI)(DEE)<sub>1</sub></td><td class="num">-154.08</td><td class="num">-136.75</td><td>1.892 / 1.897</td><td>1.909</td><td><span class="grade grade-A">A</span></td></tr>
-  <tr class="dee-row"><td>Li(FSI)(DEE)<sub>2</sub></td><td class="num">-171.34</td><td class="num">-142.22</td><td>1.981 / 1.986</td><td>2.006 / 2.007</td><td><span class="grade grade-A">A</span></td></tr>
-  <tr class="thf-row"><td>Li(FSI)(THF)<sub>1</sub></td><td class="num">-155.62</td><td class="num">-137.46</td><td>1.898 / 1.886</td><td>1.891</td><td><span class="grade grade-A">A</span></td></tr>
-  <tr class="thf-row"><td>Li(FSI)(THF)<sub>2</sub></td><td class="num">-173.64</td><td class="num">-143.93</td><td>1.965 / 1.933</td><td>1.930 / 1.944</td><td><span class="grade grade-B">B</span></td></tr>
-  <tr class="thf-row"><td>Li(FSI)(THF)<sub>3</sub></td><td class="num"><b>-190.14</b></td><td class="num"><b>-155.79</b></td><td>--</td><td>--</td><td><span class="grade grade-A">A</span></td></tr>
-</tbody>
-</table>
-
-<h3>DDG Comparison: DEE vs THF (233K)</h3>
-<table>
-<thead>
-  <tr><th>Category</th><th>Pair</th><th class="num" style="color:var(--dee)">dG(DEE)</th><th class="num" style="color:var(--thf)">dG(THF)</th><th class="num">DDG</th><th>Interpretation</th></tr>
-</thead>
-<tbody>
-  <tr><td>Solvation</td><td>n=1</td><td class="num">-33.25</td><td class="num">-34.95</td><td class="num">-1.69</td><td>THF slightly stronger</td></tr>
-  <tr><td>Solvation</td><td>n=2</td><td class="num">-34.73</td><td class="num">-59.20</td><td class="num"><b>-24.48</b></td><td style="color:var(--thf)">THF much stronger</td></tr>
-  <tr><td>TTE mixed</td><td>n=2, m=1</td><td class="num">-18.51</td><td class="num">-47.53</td><td class="num"><b>-29.02</b></td><td style="color:var(--thf)">THF much stronger</td></tr>
-  <tr><td>TTE mixed</td><td>n=1, m=2</td><td class="num">-9.56</td><td class="num">-34.16</td><td class="num"><b>-24.61</b></td><td style="color:var(--thf)">THF much stronger</td></tr>
-  <tr><td>CIP</td><td>n=1</td><td class="num">-136.75</td><td class="num">-137.46</td><td class="num">-0.71</td><td>Nearly equal (FSI<sup>-</sup> dominates)</td></tr>
-  <tr><td>CIP</td><td>n=2</td><td class="num">-142.22</td><td class="num">-143.93</td><td class="num">-1.71</td><td>Nearly equal (FSI<sup>-</sup> dominates)</td></tr>
-</tbody>
-</table>
-
-<h3>Excluded Systems (Steric Failure)</h3>
-<table>
-<thead>
-  <tr><th>System</th><th class="num">dE (kcal/mol)</th><th>Reason</th></tr>
-</thead>
-<tbody class="excluded">
-  <tr><td>Li(DEE)<sub>3</sub></td><td class="num">+19.81</td><td>Only 1/3 DEE coordinates (steric failure)</td></tr>
-  <tr><td>Li(DEE)<sub>4</sub></td><td class="num">+66.24</td><td>Only 2/4 DEE coordinates (steric failure)</td></tr>
-  <tr><td>Li(THF)<sub>3</sub></td><td class="num">-25.83</td><td>Only 2/3 THF coordinates</td></tr>
-  <tr><td>Li(DEE)<sub>1</sub>(TTE)<sub>1</sub></td><td class="num">+45.85</td><td>Fully dissociated (Li-O = 6.6 A)</td></tr>
-  <tr><td>Li(DEE)<sub>2</sub>(TTE)<sub>2</sub></td><td class="num">+59.83</td><td>Steric failure</td></tr>
-</tbody>
-</table>
-
-<!-- Binding Energy Charts -->
-<div class="chart-row">
-  <div class="chart-container">
-    <h3 style="margin-bottom:12px">dG Binding Energy (233K)</h3>
-    <canvas id="chartBindingDG"></canvas>
-  </div>
-  <div class="chart-container">
-    <h3 style="margin-bottom:12px">Entropy Penalty (TdS at 233K)</h3>
-    <canvas id="chartTdS"></canvas>
-  </div>
-</div>
-
-<div class="chart-container">
-  <h3 style="margin-bottom:12px">DDG(DEE - THF) at 233K</h3>
-  <canvas id="chartDDG"></canvas>
-</div>
-</section>
-
-<!-- 6. PHASE 3 -->
-<section id="phase3">
-<h2>Phase 3: Desolvation Barriers <span class="badge" style="background:rgba(88,166,255,0.15);color:var(--accent)">In Progress</span></h2>
-
-<h3>Scan Status</h3>
-<table>
-<thead>
-  <tr><th>Scan</th><th>Reaction</th><th>Points</th><th>Status</th><th class="num">Barrier (kcal/mol)</th></tr>
-</thead>
-<tbody>
-  <tr class="dee-row"><td>DEE2-TTE desolvation</td><td>Li<sup>+</sup>(DEE)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(DEE)(TTE) + DEE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>17.04</b></td></tr>
-  <tr class="thf-row"><td>THF2-TTE desolvation</td><td>Li<sup>+</sup>(THF)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(THF)(TTE) + THF</td><td>19/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>6.73</b></td></tr>
-  <tr class="dee-row"><td>FSI-DEE2 desolvation</td><td>Li<sup>+</sup>FSI<sup>-</sup>(DEE)<sub>2</sub> &rarr; Li<sup>+</sup>FSI<sup>-</sup>(DEE) + DEE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>9.86</b></td></tr>
-  <tr class="thf-row"><td>FSI-THF2 desolvation</td><td>Li<sup>+</sup>FSI<sup>-</sup>(THF)<sub>2</sub> &rarr; Li<sup>+</sup>FSI<sup>-</sup>(THF) + THF</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>7.76</b></td></tr>
-  <tr class="thf-row"><td>THF4 desolvation</td><td>Li<sup>+</sup>(THF)<sub>4</sub> &rarr; Li<sup>+</sup>(THF)<sub>3</sub> + THF</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>13.90</b></td></tr>
-  <tr class="dee-row"><td>DEE4 desolvation</td><td>Li<sup>+</sup>(DEE)<sub>4</sub> &rarr; Li<sup>+</sup>(DEE)<sub>3</sub> + DEE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>22.14</b></td></tr>
-  <tr class="dee-row"><td>DEE2-TTE removal</td><td>Li<sup>+</sup>(DEE)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(DEE)<sub>2</sub> + TTE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>8.72</b></td></tr>
-  <tr class="thf-row"><td>THF2-TTE removal</td><td>Li<sup>+</sup>(THF)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(THF)<sub>2</sub> + TTE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>6.16</b></td></tr>
-  <tr class="dee-row"><td>DEE1-TTE2 removal</td><td>Li<sup>+</sup>(DEE)(TTE)<sub>2</sub> &rarr; Li<sup>+</sup>(DEE)(TTE) + TTE</td><td>1/20</td><td><span class="status status-error">ERROR</span></td><td class="num" style="color:var(--text3)">--</td></tr>
-  <tr class="thf-row"><td>THF1-TTE2 removal</td><td>Li<sup>+</sup>(THF)(TTE)<sub>2</sub> &rarr; Li<sup>+</sup>(THF)(TTE) + TTE</td><td>3/20</td><td><span class="status status-running">RUNNING</span></td><td class="num">0.67</td></tr>
-</tbody>
-</table>
-
-<div class="mermaid">
-%%{init: {'theme': 'dark'}}%%
-graph TB
-  subgraph Desolvation["Desolvation Scans"]
-    D1["DEE2-TTE desol<br/>17.04 kcal/mol<br/>COMPLETE"]
-    T1["THF2-TTE desol<br/>6.73 kcal/mol<br/>COMPLETE"]
-    D2["FSI-DEE2 desol<br/>9.86 kcal/mol<br/>COMPLETE"]
-    T2["FSI-THF2 desol<br/>7.76 kcal/mol<br/>COMPLETE"]
-    T3["THF4 desol<br/>13.90 kcal/mol<br/>COMPLETE"]
-    D3["DEE4 desol<br/>22.14 kcal/mol<br/>COMPLETE"]
-  end
-  subgraph Removal["TTE Removal Scans"]
-    R1["DEE2-TTE removal<br/>8.72 kcal/mol<br/>COMPLETE"]
-    R2["THF2-TTE removal<br/>6.16 kcal/mol<br/>COMPLETE"]
-    R3["DEE1-TTE2 removal<br/>ERROR 1/20"]
-    R4["THF1-TTE2 removal<br/>RUNNING 3/20"]
-  end
-  style D1 fill:#1a3a1a,stroke:#3fb950
-  style T1 fill:#1a3a1a,stroke:#3fb950
-  style D2 fill:#1a3a1a,stroke:#3fb950
-  style T2 fill:#1a3a1a,stroke:#3fb950
-  style T3 fill:#1a3a1a,stroke:#3fb950
-  style D3 fill:#1a2a3a,stroke:#58a6ff
-  style R1 fill:#1a3a1a,stroke:#3fb950
-  style R2 fill:#1a3a1a,stroke:#3fb950
-  style R3 fill:#1a2a3a,stroke:#58a6ff
-  style R4 fill:#1a2a3a,stroke:#58a6ff
-</div>
-
-<!-- PES Charts -->
-<div class="chart-container">
-  <h3 style="margin-bottom:12px">PES Profiles: Desolvation (Li-O distance)</h3>
-  <canvas id="chartPES"></canvas>
-</div>
-
-<div class="chart-container">
-  <h3 style="margin-bottom:12px">Barrier Comparison (kcal/mol)</h3>
-  <canvas id="chartBarriers"></canvas>
-</div>
-</section>
-
-<!-- 7. NPA -->
-<section id="npa">
-<h2>NPA Charge Analysis</h2>
-<table>
-<thead>
-  <tr><th>Cluster</th><th>Type</th><th class="num">Li (Mulliken)</th><th class="num">Li (Loewdin)</th><th class="num">CT (Mulliken)</th><th class="num">CT (Loewdin)</th><th class="num">n(O)</th></tr>
-</thead>
-<tbody>
-  <tr class="dee-row"><td>Li(DEE)<sub>1</sub></td><td>Pure</td><td class="num">+0.907</td><td class="num">+0.749</td><td class="num">0.093</td><td class="num">0.251</td><td class="num">1</td></tr>
-  <tr class="dee-row"><td>Li(DEE)<sub>2</sub></td><td>Pure</td><td class="num">+0.616</td><td class="num">+0.397</td><td class="num">0.384</td><td class="num">0.603</td><td class="num">2</td></tr>
-  <tr class="thf-row"><td>Li(THF)<sub>1</sub></td><td>Pure</td><td class="num">+0.928</td><td class="num">+0.799</td><td class="num">0.072</td><td class="num">0.201</td><td class="num">1</td></tr>
-  <tr class="thf-row"><td>Li(THF)<sub>2</sub></td><td>Pure</td><td class="num">+0.878</td><td class="num">+0.632</td><td class="num">0.122</td><td class="num">0.368</td><td class="num">2</td></tr>
-  <tr class="thf-row"><td>Li(THF)<sub>4</sub></td><td>Pure</td><td class="num">+0.779</td><td class="num">+0.406</td><td class="num">0.221</td><td class="num">0.594</td><td class="num">4</td></tr>
-  <tr class="dee-row"><td>Li(FSI)(DEE)<sub>1</sub></td><td>CIP</td><td class="num">+0.829</td><td class="num">+0.562</td><td class="num" colspan="2" style="text-align:center;color:var(--text3)">FSI<sup>-</sup> dominated</td><td class="num">5</td></tr>
-  <tr class="dee-row"><td>Li(FSI)(DEE)<sub>2</sub></td><td>CIP</td><td class="num">+0.778</td><td class="num">+0.349</td><td class="num" colspan="2" style="text-align:center;color:var(--text3)">FSI<sup>-</sup> dominated</td><td class="num">6</td></tr>
-</tbody>
-</table>
-<p style="color:var(--text2);font-size:0.85em">DEE shows larger charge transfer per molecule than THF: DEE is a better electron donor per O atom, but THF compensates with higher coordination number.</p>
-</section>
-
-<!-- 8. RELIABILITY -->
-<section id="reliability">
-<h2>Reliability Assessment</h2>
-<div class="card-grid">
-  <div class="card">
-    <h3>Grade Distribution</h3>
-    <table>
-      <tr><td><span class="grade grade-A">A</span> True minimum (0 imag)</td><td class="num"><b>13</b></td></tr>
-      <tr><td><span class="grade grade-Am">A-</span> Quasi-minimum (&lt; -10 cm<sup>-1</sup>)</td><td class="num">1</td></tr>
-      <tr><td><span class="grade grade-B">B</span> Small imag (&lt; -30 cm<sup>-1</sup>)</td><td class="num">2</td></tr>
-      <tr><td><span class="grade grade-C">C</span> Significant imag</td><td class="num">0</td></tr>
-    </table>
-    <p style="color:var(--text2);font-size:0.85em;margin-top:8px">81% Grade A. All B grades have imaginary frequencies &lt; -25 cm<sup>-1</sup> (quasi-RRHO threshold).</p>
-  </div>
-  <div class="card">
-    <h3>Methodology Validation</h3>
-    <table>
-      <tr><td>Functional</td><td>wB97X-D3 (range-separated hybrid + D3)</td></tr>
-      <tr><td>Basis Set</td><td>def2-TZVP (triple-zeta)</td></tr>
-      <tr><td>Dispersion</td><td>Built-in D3 correction</td></tr>
-      <tr><td>Thermochemistry</td><td>Quasi-RRHO (Grimme, B_av)</td></tr>
-      <tr><td>SCF Convergence</td><td>TightSCF (1e-8 Eh)</td></tr>
-      <tr><td>RI Approximation</td><td>RIJCOSX / def2/J</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h3>Known Limitations</h3>
-    <ul style="color:var(--text2);font-size:0.88em;padding-left:20px">
-      <li>Gas-phase calculations (no implicit solvent model)</li>
-      <li>Single conformer per cluster (no conformational averaging)</li>
-      <li>DEE steric constraint: max 2-coordinate (DEE<sub>3</sub>, DEE<sub>4</sub> excluded)</li>
-      <li>Phase 3 PES: relaxed scan (not IRC), approximate barrier</li>
-      <li>BSSE not explicitly corrected (mitigated by TZVP basis)</li>
-    </ul>
-  </div>
-  <div class="card">
-    <h3>Reoptimization Log</h3>
-    <table>
-      <tr><td>Li(THF)<sub>1</sub></td><td>Disp reopt &rarr; true minimum</td><td><span class="grade grade-A">A</span></td></tr>
-      <tr><td>Li(THF)<sub>2</sub></td><td>Reopt &rarr; true minimum</td><td><span class="grade grade-A">A</span></td></tr>
-      <tr><td>Li(THF)<sub>4</sub></td><td>Reopt &rarr; true minimum (dG shift: -8 kcal/mol)</td><td><span class="grade grade-A">A</span></td></tr>
-      <tr><td>Li(FSI)(THF)<sub>3</sub></td><td>Reopt &rarr; true minimum (new CIP)</td><td><span class="grade grade-A">A</span></td></tr>
-    </table>
-  </div>
-</div>
-</section>
-
-<!-- 9. DISCUSSION -->
-<section id="discussion">
+<!-- STATIC: DISCUSSION -->
+<section id="discussion-static" style="display:none">
 <h2>Scientific Discussion</h2>
 
 <div class="disc-item">
@@ -500,84 +234,18 @@ graph TB
 </div>
 </section>
 
-<!-- 10. PROGRESS -->
-<section id="progress">
-<h2>Progress <span class="badge" style="background:rgba(210,153,34,0.15);color:var(--gradeB)">80%</span></h2>
-
-<h3>Phase 1: Monomer Optimization</h3>
-<div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--success)">5/5 (100%)</div></div>
-
-<h3>Phase 2: Solvation Clusters</h3>
-<div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--success)">16/16 (100%) + 5 CIP</div></div>
-
-<h3>Phase 3: Desolvation PES Scans</h3>
-<div class="progress-bar"><div class="progress-fill" style="width:80%;background:var(--accent)">8/10 complete (80%)</div></div>
-
-<h3>Currently Running</h3>
-<table>
-<thead>
-  <tr><th>Calculation</th><th>PID</th><th>Progress</th><th>Notes</th></tr>
-</thead>
-<tbody>
-  <tr><td>DEE2_TTE1 remove DEE (FIX v2)</td><td>391599</td><td>Step 1/20</td><td>Model Hessian, conservative step. Fixed .carthess bug.</td></tr>
-  <tr><td>THF2_TTE1 remove THF (restart)</td><td>391659</td><td>Step 1/14 (=17/30)</td><td>Restart from step 17, increased maxcore 8000.</td></tr>
-</tbody>
-</table>
-
-<h3>Remaining Work</h3>
-<table>
-<thead>
-  <tr><th>Task</th><th>Priority</th><th>Dependency</th><th>Est. Time</th></tr>
-</thead>
-<tbody>
-  <tr><td>Complete DEE2_TTE1 scan (20 steps)</td><td style="color:var(--fail)">HIGH</td><td>Running now</td><td>~24-48h</td></tr>
-  <tr><td>Complete THF2_TTE1 scan (14 steps)</td><td style="color:var(--fail)">HIGH</td><td>Running now</td><td>~18-36h</td></tr>
-  <tr><td>DEE4 desolvation (2 more steps)</td><td style="color:var(--warn)">MED</td><td>After current scans</td><td>~4h</td></tr>
-  <tr><td>DEE1_TTE2 removal (19 more steps)</td><td style="color:var(--warn)">MED</td><td>After current scans</td><td>~24h</td></tr>
-  <tr><td>THF1_TTE2 removal (17 more steps)</td><td style="color:var(--warn)">MED</td><td>After current scans</td><td>~24h</td></tr>
-  <tr><td>Extract dG_barrier(T) from PES</td><td>LOW</td><td>All scans complete</td><td>~2h (script)</td></tr>
-</tbody>
-</table>
-
-<div class="mermaid">
-%%{init: {'theme': 'dark'}}%%
-gantt
-  title Phase 3 Timeline
-  dateFormat YYYY-MM-DD
-  axisFormat %m/%d
-
-  section Desolvation
-  DEE2-TTE desol        :done, d1, 2026-03-15, 2026-03-20
-  THF2-TTE desol        :done, d2, 2026-03-15, 2026-03-22
-  FSI-DEE2 desol        :done, d3, 2026-03-18, 2026-03-25
-  FSI-THF2 desol        :done, d4, 2026-03-18, 2026-03-24
-  THF4 desol            :done, d5, 2026-03-20, 2026-03-28
-  DEE4 desol            :active, d6, 2026-03-20, 2026-04-08
-
-  section TTE Removal
-  DEE2-TTE removal      :done, r1, 2026-03-22, 2026-03-30
-  THF2-TTE removal      :done, r2, 2026-03-22, 2026-04-01
-  DEE1-TTE2 removal     :active, r3, 2026-04-05, 2026-04-08
-  THF1-TTE2 removal     :active, r4, 2026-04-05, 2026-04-08
-
-  section Analysis
-  Barrier extraction    :crit, a1, 2026-04-09, 2026-04-10
-  Publication figures   :crit, a2, 2026-04-10, 2026-04-12
-</gantt>
-</div>
-</section>
-
 <!-- Footer -->
-<div style="text-align:center; margin-top:32px; padding:16px; color:var(--text3); font-size:0.8em; border-top:1px solid var(--border);">
-  DFT-DEE-THF Project | Kailos Dashboard v3.0 | Generated 2026-04-05 13:55 KST<br>
+<div id="footer" style="text-align:center; margin-top:32px; padding:16px; color:var(--text3); font-size:0.8em; border-top:1px solid var(--border);">
+  DFT-DEE-THF Project | Kailos Dashboard v4.0 (Dynamic) | <span id="footer-time">--</span><br>
   wB97X-D3/def2-TZVP | ORCA 6.1.0 | Quasi-RRHO Thermochemistry
 </div>
 
 </div><!-- /container -->
 
-<!-- CHART SCRIPTS -->
 <script>
-mermaid.initialize({ startOnLoad: true, theme: 'dark',
+/* ===== INITIALIZATION ===== */
+mermaid.initialize({
+  startOnLoad: false, theme: 'dark',
   themeVariables: { darkMode: true, background: '#0d1117', primaryColor: '#21262d',
     secondaryColor: '#161b22', tertiaryColor: '#30363d', primaryTextColor: '#e6edf3' }
 });
@@ -592,136 +260,768 @@ const chartDefaults = {
   }
 };
 
-// 1. Binding Energy dG chart
-new Chart(document.getElementById('chartBindingDG'), {
-  type: 'bar',
-  data: {
-    labels: ['Li(DEE)1','Li(DEE)2','Li(THF)1','Li(THF)2','Li(THF)4',
-             'Li(THF)1(TTE)1','Li(THF)2(TTE)1','Li(DEE)2(TTE)1',
-             'Li(THF)1(TTE)2','Li(DEE)1(TTE)2','Li(THF)2(TTE)2'],
-    datasets: [{
-      label: 'dG (kcal/mol) at 233K',
-      data: [-33.25, -34.73, -34.95, -59.20, -90.57, -53.32, -47.53, -18.51, -34.16, -9.56, 3.65],
-      backgroundColor: [DEE, DEE, THF, THF, THF, THF, THF, DEE, THF, DEE, THF],
-      borderColor: [DEE, DEE, THF, THF, THF, THF, THF, DEE, THF, DEE, THF],
-      borderWidth: 1
-    }]
-  },
-  options: { ...chartDefaults,
-    plugins: { ...chartDefaults.plugins, title: { display: false } },
-    scales: { ...chartDefaults.scales,
-      y: { ...chartDefaults.scales.y, title: { display: true, text: 'dG (kcal/mol)', color: '#8b949e' } }
+/* ===== GLOBAL STATE ===== */
+let activeCharts = [];
+let mermaidCounter = 0;
+let currentServerId = null;
+
+/* ===== HELPER: Create element with attributes ===== */
+function el(tag, attrs, children) {
+  const e = document.createElement(tag);
+  if (attrs) {
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === 'textContent') e.textContent = v;
+      else if (k === 'className') e.className = v;
+      else if (k === 'style') e.style.cssText = v;
+      else if (k === 'colSpan') e.colSpan = v;
+      else e.setAttribute(k, v);
     }
   }
-});
+  if (children) {
+    if (typeof children === 'string') e.textContent = children;
+    else if (Array.isArray(children)) children.forEach(c => { if (c) e.appendChild(c); });
+    else e.appendChild(children);
+  }
+  return e;
+}
 
-// 2. TdS chart
-new Chart(document.getElementById('chartTdS'), {
-  type: 'bar',
-  data: {
-    labels: ['Li(DEE)1','Li(DEE)2','Li(THF)1','Li(THF)2','Li(THF)4',
-             'Li(THF)1(TTE)1','Li(THF)2(TTE)1','Li(DEE)2(TTE)1',
-             'Li(THF)1(TTE)2','Li(DEE)1(TTE)2','Li(THF)2(TTE)2'],
-    datasets: [{
-      label: 'TdS (kcal/mol)',
-      data: [-5.37, -11.26, -5.91, -13.96, -25.93, -16.50, -22.39, -21.53, -28.75, -23.14, -34.51],
-      backgroundColor: 'rgba(255,152,0,0.6)',
-      borderColor: TTE,
-      borderWidth: 1
-    }]
-  },
-  options: { ...chartDefaults,
-    scales: { ...chartDefaults.scales,
-      y: { ...chartDefaults.scales.y, title: { display: true, text: 'TdS (kcal/mol)', color: '#8b949e' } }
+/* ===== HELPER: Grade badge ===== */
+function gradeBadge(g) {
+  if (!g) return document.createTextNode('--');
+  const cls = g === 'A-' ? 'grade-Am' : ('grade-' + g);
+  return el('span', { className: 'grade ' + cls }, g);
+}
+
+/* ===== HELPER: Status badge ===== */
+function statusBadge(s) {
+  if (!s) return document.createTextNode('--');
+  const key = s.toUpperCase();
+  const cls = key === 'COMPLETE' ? 'status-complete' : key === 'RUNNING' ? 'status-running' : 'status-error';
+  return el('span', { className: 'status ' + cls }, s);
+}
+
+/* ===== HELPER: Row class from cls field ===== */
+function rowClass(cls) {
+  if (!cls) return '';
+  return cls + '-row';
+}
+
+/* ===== HELPER: Format number ===== */
+function fmt(v, d) {
+  if (v === null || v === undefined) return '--';
+  return typeof v === 'number' ? v.toFixed(d !== undefined ? d : 2) : String(v);
+}
+
+/* ===== HELPER: Create a table ===== */
+function buildTable(headers, rows, options) {
+  const table = el('table');
+  const thead = el('thead');
+  const headRow = el('tr');
+  headers.forEach(h => {
+    const attrs = {};
+    if (h.num) attrs.className = 'num';
+    if (h.style) attrs.style = h.style;
+    headRow.appendChild(el('th', attrs, h.text));
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+  const tbody = el('tbody', options && options.tbodyClass ? { className: options.tbodyClass } : null);
+  rows.forEach(r => tbody.appendChild(r));
+  table.appendChild(tbody);
+  return table;
+}
+
+/* ===== HELPER: Create num td ===== */
+function numTd(v, d, extraStyle) {
+  const td = el('td', { className: 'num' });
+  if (extraStyle) td.style.cssText = extraStyle;
+  td.textContent = fmt(v, d);
+  return td;
+}
+
+/* ===== HELPER: Render mermaid diagram ===== */
+async function renderMermaid(container, code) {
+  mermaidCounter++;
+  const id = 'mermaid-svg-' + mermaidCounter;
+  try {
+    const { svg } = await mermaid.render(id, code);
+    container.innerHTML = svg;
+  } catch (err) {
+    container.textContent = 'Mermaid render error: ' + err.message;
+  }
+}
+
+/* ===== HELPER: Color for cls ===== */
+function colorForCls(cls) {
+  if (cls === 'dee') return DEE;
+  if (cls === 'thf') return THF;
+  if (cls === 'tte') return TTE;
+  if (cls === 'fsi') return FSI;
+  return '#8b949e';
+}
+
+/* ===== DESTROY CHARTS ===== */
+function destroyCharts() {
+  activeCharts.forEach(c => c.destroy());
+  activeCharts = [];
+}
+
+/* ===== MAIN RENDER ===== */
+async function renderDashboard(data) {
+  destroyCharts();
+  const container = document.getElementById('dynamic-content');
+  container.textContent = '';
+
+  const p = data.progress || {};
+  const g = data.grades || {};
+  const p1 = p.phase1 || [0,0];
+  const p2 = p.phase2 || [0,0];
+  const p3 = p.phase3 || [0,0];
+  const totalDone = p1[0] + p2[0] + p3[0];
+  const totalAll = p1[1] + p2[1] + p3[1];
+
+  /* --- Update header meta --- */
+  document.getElementById('meta-server').textContent = 'Server: ' + data.meta.server_id;
+  document.getElementById('meta-running').textContent = data.meta.running_orca + ' scans running';
+  const dt = new Date(data.meta.updated);
+  document.getElementById('meta-updated').textContent = 'Updated: ' + dt.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+  document.getElementById('footer-time').textContent = 'Data from ' + data.meta.server_id + ' @ ' + dt.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+
+  /* ========== 1. OVERVIEW ========== */
+  const secOverview = el('section', { id: 'overview' });
+  secOverview.appendChild(el('h2', null, 'Overview'));
+
+  const kpiGrid = el('div', { className: 'kpi-grid' });
+
+  // Phases complete
+  const phasesComplete = (p1[0] === p1[1] ? 1 : 0) + (p2[0] === p2[1] ? 1 : 0) + (p3[0] === p3[1] ? 1 : 0);
+  const kpi1 = el('div', { className: 'kpi' });
+  kpi1.appendChild(el('div', { className: 'value', style: 'color:var(--success)' }, phasesComplete + ' / 3'));
+  kpi1.appendChild(el('div', { className: 'label' }, 'Phases Complete'));
+  const p3Status = p3[0] === p3[1] ? 'All phases done' : 'Phase 1-2 done, Phase 3 in progress';
+  kpi1.appendChild(el('div', { className: 'sub' }, p3Status));
+  kpiGrid.appendChild(kpi1);
+
+  // Optimized structures
+  const kpi2 = el('div', { className: 'kpi' });
+  kpi2.appendChild(el('div', { className: 'value', style: 'color:var(--accent)' }, String(p2[1])));
+  kpi2.appendChild(el('div', { className: 'label' }, 'Optimized Structures'));
+  const nPure = (data.phase2_pure || []).length + (data.phase2_tte || []).length;
+  const nCip = (data.phase2_cip || []).length;
+  const nExcl = (data.phase2_excluded || []).length;
+  kpi2.appendChild(el('div', { className: 'sub' }, nPure + ' pure + ' + nCip + ' CIP (+ ' + nExcl + ' excluded)'));
+  kpiGrid.appendChild(kpi2);
+
+  // PES scans
+  const barriers = data.phase3_barriers || [];
+  const nComplete = barriers.filter(b => b.status === 'COMPLETE').length;
+  const nRunning = barriers.filter(b => b.status === 'RUNNING').length;
+  const nError = barriers.filter(b => b.status === 'ERROR').length;
+  const kpi3 = el('div', { className: 'kpi' });
+  kpi3.appendChild(el('div', { className: 'value', style: 'color:var(--tte)' }, String(barriers.length)));
+  kpi3.appendChild(el('div', { className: 'label' }, 'PES Scans'));
+  kpi3.appendChild(el('div', { className: 'sub' }, nComplete + ' complete, ' + nRunning + ' running, ' + nError + ' error'));
+  kpiGrid.appendChild(kpi3);
+
+  // Grade distribution
+  const totalA = (g['A'] || 0) + (g['A-'] || 0);
+  const totalB = g['B'] || 0;
+  const kpi4 = el('div', { className: 'kpi' });
+  const kpi4val = el('div', { className: 'value' });
+  kpi4val.appendChild(el('span', { style: 'color:var(--gradeA)' }, String(totalA)));
+  kpi4val.appendChild(el('span', { style: 'color:var(--text3)' }, '/'));
+  kpi4val.appendChild(el('span', { style: 'color:var(--gradeB)' }, String(totalB)));
+  kpi4.appendChild(kpi4val);
+  kpi4.appendChild(el('div', { className: 'label' }, 'Grade Distribution'));
+  kpi4.appendChild(el('div', { className: 'sub' }, 'A: ' + (g['A']||0) + ' | A-: ' + (g['A-']||0) + ' | B: ' + (g['B']||0) + ' | C: ' + (g['C']||0)));
+  kpiGrid.appendChild(kpi4);
+
+  secOverview.appendChild(kpiGrid);
+  container.appendChild(secOverview);
+
+  /* ========== 2. PIPELINE ========== */
+  const secPipeline = el('section', { id: 'pipeline' });
+  const h2pipe = el('h2');
+  h2pipe.appendChild(document.createTextNode('Pipeline '));
+  const p3Pct = Math.round(p3[0] / p3[1] * 100);
+  const pipelineActive = p3[0] < p3[1];
+  if (pipelineActive) {
+    h2pipe.appendChild(el('span', { className: 'badge', style: 'background:rgba(88,166,255,0.15);color:var(--accent)' }, 'Phase 3 Active'));
+  } else {
+    h2pipe.appendChild(el('span', { className: 'badge', style: 'background:rgba(63,185,80,0.15);color:var(--gradeA)' }, 'All Complete'));
+  }
+  secPipeline.appendChild(h2pipe);
+
+  const pipeBox = el('div', { className: 'mermaid-box' });
+  const pipeCode = `%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#21262d', 'edgeLabelBackground': '#161b22'}}}%%
+graph LR
+  P1["Phase 1<br/>Monomer Opt+Freq<br/><b>${p1[0]}/${p1[1]} DONE</b>"] -->|ZPE, reference energies| P2
+  P2["Phase 2<br/>Solvation Clusters<br/><b>${p2[0]}/${p2[1]} DONE</b>"] -->|Optimized geometries| P3
+  P3["Phase 3<br/>Desolvation PES<br/><b>${p3[0]}/${p3[1]} done</b>"]
+  P2 -->|CIP structures| P2C["Phase 2 CIP<br/>FSI Contact Pairs<br/><b>${nCip}/${nCip} DONE</b>"]
+  style P1 fill:${p1[0]===p1[1]?'#1a3a1a,stroke:#3fb950':'#1a2a3a,stroke:#58a6ff'},color:#e6edf3
+  style P2 fill:${p2[0]===p2[1]?'#1a3a1a,stroke:#3fb950':'#1a2a3a,stroke:#58a6ff'},color:#e6edf3
+  style P2C fill:#1a3a1a,stroke:#3fb950,color:#e6edf3
+  style P3 fill:${p3[0]===p3[1]?'#1a3a1a,stroke:#3fb950':'#1a2a3a,stroke:#58a6ff'},color:#e6edf3`;
+  await renderMermaid(pipeBox, pipeCode);
+  secPipeline.appendChild(pipeBox);
+  container.appendChild(secPipeline);
+
+  /* ========== 3. DESCRIPTORS (static) ========== */
+  const descSection = document.getElementById('descriptors');
+  descSection.style.display = '';
+  container.appendChild(descSection);
+
+  /* ========== 4. PHASE 1 ========== */
+  const secP1 = el('section', { id: 'phase1' });
+  secP1.appendChild(el('h2', null, 'Phase 1: Monomer Properties'));
+
+  const p1Headers = [
+    { text: 'Molecule' }, { text: 'E (Eh)', num: true }, { text: 'ZPE (kcal/mol)', num: true },
+    { text: 'Dipole (D)', num: true }, { text: 'HOMO (eV)', num: true },
+    { text: 'LUMO (eV)', num: true }, { text: 'Gap (eV)', num: true }
+  ];
+  const molClsMap = { 'Li+': '', 'DEE': 'dee', 'THF': 'thf', 'FSI-': 'fsi', 'TTE': 'tte' };
+  const p1Rows = (data.phase1 || []).map(m => {
+    const cls = molClsMap[m.name] || '';
+    const tr = el('tr', cls ? { className: cls + '-row' } : null);
+    const nameTd = el('td');
+    if (m.name === 'Li+') { nameTd.appendChild(document.createTextNode('Li')); nameTd.appendChild(el('sup', null, '+')); }
+    else if (m.name === 'FSI-') { nameTd.appendChild(document.createTextNode('FSI')); nameTd.appendChild(el('sup', null, '-')); }
+    else { nameTd.textContent = m.name; }
+    tr.appendChild(nameTd);
+    tr.appendChild(numTd(m.e, 4));
+    tr.appendChild(numTd(m.zpe, 2));
+    tr.appendChild(numTd(m.dipole, 3));
+    tr.appendChild(numTd(m.homo, 2));
+    tr.appendChild(numTd(m.lumo, 2));
+    tr.appendChild(numTd(m.gap, 2));
+    return tr;
+  });
+  secP1.appendChild(buildTable(p1Headers, p1Rows));
+  const p1Note = el('p', { style: 'color:var(--text2);font-size:0.85em' });
+  p1Note.appendChild(document.createTextNode('THF dipole (1.62 D) > DEE (1.09 D): stronger electrostatic attraction to Li'));
+  p1Note.appendChild(el('sup', null, '+'));
+  p1Note.appendChild(document.createTextNode('. TTE has the largest gap (15.11 eV): electrochemical stability.'));
+  secP1.appendChild(p1Note);
+  container.appendChild(secP1);
+
+  /* ========== 5. PHASE 2 ========== */
+  const secP2 = el('section', { id: 'phase2' });
+  const h2p2 = el('h2');
+  h2p2.appendChild(document.createTextNode('Phase 2: Solvation Thermodynamics '));
+  if (p2[0] === p2[1]) {
+    h2p2.appendChild(el('span', { className: 'badge', style: 'background:rgba(63,185,80,0.15);color:var(--gradeA)' }, 'Complete'));
+  }
+  secP2.appendChild(h2p2);
+
+  /* Pure solvation */
+  secP2.appendChild(el('h3', null, 'Pure Solvation Clusters (233K / -40 C)'));
+  const p2PureHeaders = [
+    { text: 'Cluster' }, { text: 'dE', num: true }, { text: 'dE_ZPE', num: true },
+    { text: 'dH', num: true }, { text: 'dG', num: true }, { text: 'TdS', num: true },
+    { text: 'Grade' }, { text: 'Notes' }
+  ];
+  function makeThermRow(item) {
+    const tr = el('tr', item.cls ? { className: rowClass(item.cls) } : null);
+    tr.appendChild(el('td', null, item.label));
+    tr.appendChild(numTd(item.dE, 2));
+    tr.appendChild(numTd(item.dE_ZPE, 2));
+    tr.appendChild(numTd(item.dH, 2));
+    const dgTd = numTd(item.dG, 2);
+    if (item.dG > 0) dgTd.style.color = 'var(--fail)';
+    tr.appendChild(dgTd);
+    tr.appendChild(numTd(item.TdS, 2));
+    const gradeTd = el('td');
+    gradeTd.appendChild(gradeBadge(item.grade));
+    tr.appendChild(gradeTd);
+    tr.appendChild(el('td', null, item.notes || ''));
+    return tr;
+  }
+  const pureRows = (data.phase2_pure || []).map(makeThermRow);
+  secP2.appendChild(buildTable(p2PureHeaders, pureRows));
+
+  /* TTE mixed */
+  secP2.appendChild(el('h3', null, 'TTE Mixed Clusters (233K)'));
+  const tteRows = (data.phase2_tte || []).map(makeThermRow);
+  secP2.appendChild(buildTable(p2PureHeaders, tteRows));
+
+  /* CIP */
+  const cipH3 = el('h3');
+  cipH3.appendChild(document.createTextNode('FSI'));
+  cipH3.appendChild(el('sup', null, '-'));
+  cipH3.appendChild(document.createTextNode(' Contact Ion Pairs (CIP, 233K)'));
+  secP2.appendChild(cipH3);
+
+  const cipHeaders = [
+    { text: 'Cluster' }, { text: 'dE', num: true }, { text: 'dG', num: true },
+    { text: 'Li-O(FSI) (A)' }, { text: 'Li-O(Solv) (A)' }, { text: 'Grade' }
+  ];
+  const cipRows = (data.phase2_cip || []).map(item => {
+    const tr = el('tr', item.cls ? { className: rowClass(item.cls) } : null);
+    tr.appendChild(el('td', null, item.label));
+    tr.appendChild(numTd(item.dE, 2));
+    tr.appendChild(numTd(item.dG, 2));
+    tr.appendChild(el('td', null, item.li_o_fsi || '--'));
+    tr.appendChild(el('td', null, item.li_o_solv || '--'));
+    const gradeTd = el('td');
+    gradeTd.appendChild(gradeBadge(item.grade));
+    tr.appendChild(gradeTd);
+    return tr;
+  });
+  secP2.appendChild(buildTable(cipHeaders, cipRows));
+
+  /* DDG */
+  secP2.appendChild(el('h3', null, 'DDG Comparison: DEE vs THF (233K)'));
+  const ddgHeaders = [
+    { text: 'Category' }, { text: 'Pair' },
+    { text: 'dG(DEE)', num: true, style: 'color:var(--dee)' },
+    { text: 'dG(THF)', num: true, style: 'color:var(--thf)' },
+    { text: 'DDG', num: true }, { text: 'Interpretation' }
+  ];
+  const ddgRows = (data.phase2_ddg || []).map(item => {
+    const tr = el('tr');
+    tr.appendChild(el('td', null, item.cat));
+    tr.appendChild(el('td', null, item.pair));
+    tr.appendChild(numTd(item.dG_dee, 2));
+    tr.appendChild(numTd(item.dG_thf, 2));
+    const ddgTd = numTd(item.ddG, 2);
+    if (Math.abs(item.ddG) > 10) ddgTd.style.fontWeight = '700';
+    tr.appendChild(ddgTd);
+    tr.appendChild(el('td', null, item.interp || ''));
+    return tr;
+  });
+  secP2.appendChild(buildTable(ddgHeaders, ddgRows));
+
+  /* Excluded */
+  secP2.appendChild(el('h3', null, 'Excluded Systems (Steric Failure)'));
+  const exclHeaders = [
+    { text: 'System' }, { text: 'dE (kcal/mol)', num: true }, { text: 'Reason' }
+  ];
+  const exclRows = (data.phase2_excluded || []).map(item => {
+    const tr = el('tr');
+    tr.appendChild(el('td', null, item.name));
+    tr.appendChild(numTd(item.dE, 2));
+    tr.appendChild(el('td', null, item.reason));
+    return tr;
+  });
+  secP2.appendChild(buildTable(exclHeaders, exclRows, { tbodyClass: 'excluded' }));
+
+  /* Phase 2 Charts */
+  const allP2 = [].concat(data.phase2_pure || [], data.phase2_tte || []);
+  if (allP2.length > 0) {
+    const chartRow = el('div', { className: 'chart-row' });
+
+    // dG chart
+    const dgChartBox = el('div', { className: 'chart-container' });
+    dgChartBox.appendChild(el('h3', { style: 'margin-bottom:12px' }, 'dG Binding Energy (233K)'));
+    const dgCanvas = el('canvas');
+    dgChartBox.appendChild(dgCanvas);
+    chartRow.appendChild(dgChartBox);
+
+    // TdS chart
+    const tdsChartBox = el('div', { className: 'chart-container' });
+    tdsChartBox.appendChild(el('h3', { style: 'margin-bottom:12px' }, 'Entropy Penalty (TdS at 233K)'));
+    const tdsCanvas = el('canvas');
+    tdsChartBox.appendChild(tdsCanvas);
+    chartRow.appendChild(tdsChartBox);
+
+    secP2.appendChild(chartRow);
+
+    const labels = allP2.map(d => d.label);
+    const dgData = allP2.map(d => d.dG);
+    const tdsData = allP2.map(d => d.TdS);
+    const bgColors = allP2.map(d => colorForCls(d.cls));
+
+    activeCharts.push(new Chart(dgCanvas, {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'dG (kcal/mol) at 233K', data: dgData, backgroundColor: bgColors, borderColor: bgColors, borderWidth: 1 }] },
+      options: { ...chartDefaults, plugins: { ...chartDefaults.plugins, title: { display: false } },
+        scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, title: { display: true, text: 'dG (kcal/mol)', color: '#8b949e' } } } }
+    }));
+
+    activeCharts.push(new Chart(tdsCanvas, {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'TdS (kcal/mol)', data: tdsData, backgroundColor: 'rgba(255,152,0,0.6)', borderColor: TTE, borderWidth: 1 }] },
+      options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, title: { display: true, text: 'TdS (kcal/mol)', color: '#8b949e' } } } }
+    }));
+
+    // DDG chart
+    const ddgArr = data.phase2_ddg || [];
+    if (ddgArr.length > 0) {
+      const ddgChartBox = el('div', { className: 'chart-container' });
+      ddgChartBox.appendChild(el('h3', { style: 'margin-bottom:12px' }, 'DDG(DEE - THF) at 233K'));
+      const ddgCanvas = el('canvas');
+      ddgChartBox.appendChild(ddgCanvas);
+      secP2.appendChild(ddgChartBox);
+
+      const ddgLabels = ddgArr.map(d => d.pair + ' ' + d.cat);
+      const ddgValues = ddgArr.map(d => d.ddG);
+      const ddgBg = ddgArr.map(d => {
+        if (d.cat === 'Solvation') return 'rgba(88,166,255,0.5)';
+        if (d.cat === 'TTE mixed') return 'rgba(255,152,0,0.5)';
+        return 'rgba(76,175,80,0.5)';
+      });
+      const ddgBorder = ddgArr.map(d => {
+        if (d.cat === 'Solvation') return '#58a6ff';
+        if (d.cat === 'TTE mixed') return TTE;
+        return FSI;
+      });
+
+      activeCharts.push(new Chart(ddgCanvas, {
+        type: 'bar',
+        data: { labels: ddgLabels, datasets: [{ label: 'DDG (DEE - THF) at 233K', data: ddgValues, backgroundColor: ddgBg, borderColor: ddgBorder, borderWidth: 1 }] },
+        options: { ...chartDefaults, indexAxis: 'y',
+          scales: {
+            x: { ...chartDefaults.scales.x, title: { display: true, text: 'DDG (kcal/mol) - negative = THF stronger', color: '#8b949e' } },
+            y: { ...chartDefaults.scales.y }
+          }
+        }
+      }));
     }
   }
-});
+  container.appendChild(secP2);
 
-// 3. DDG chart
-new Chart(document.getElementById('chartDDG'), {
-  type: 'bar',
-  data: {
-    labels: ['n=1 Solvation','n=2 Solvation','n=2,m=1 TTE','n=1,m=2 TTE','n=1 CIP','n=2 CIP'],
-    datasets: [{
-      label: 'DDG (DEE - THF) at 233K',
-      data: [-1.69, -24.48, -29.02, -24.61, -0.71, -1.71],
-      backgroundColor: ['rgba(88,166,255,0.5)','rgba(88,166,255,0.5)','rgba(255,152,0,0.5)','rgba(255,152,0,0.5)','rgba(76,175,80,0.5)','rgba(76,175,80,0.5)'],
-      borderColor: ['#58a6ff','#58a6ff',TTE,TTE,FSI,FSI],
-      borderWidth: 1
-    }]
-  },
-  options: { ...chartDefaults,
-    indexAxis: 'y',
-    scales: {
-      x: { ...chartDefaults.scales.x, title: { display: true, text: 'DDG (kcal/mol) - negative = THF stronger', color: '#8b949e' } },
-      y: { ...chartDefaults.scales.y }
-    }
+  /* ========== 6. PHASE 3 ========== */
+  const secP3 = el('section', { id: 'phase3' });
+  const h2p3 = el('h2');
+  h2p3.appendChild(document.createTextNode('Phase 3: Desolvation Barriers '));
+  if (p3[0] < p3[1]) {
+    h2p3.appendChild(el('span', { className: 'badge', style: 'background:rgba(88,166,255,0.15);color:var(--accent)' }, 'In Progress'));
+  } else {
+    h2p3.appendChild(el('span', { className: 'badge', style: 'background:rgba(63,185,80,0.15);color:var(--gradeA)' }, 'Complete'));
   }
-});
+  secP3.appendChild(h2p3);
 
-// 4. PES Profile chart
-const pesDatasets = [
-  { label: 'DEE2-TTE desol (17.04)', color: DEE, dash: false, fill: true,
-    pts: [[1.80,0.00],[2.02,-0.03],[2.24,2.52],[2.46,4.93],[2.68,7.17],[2.91,8.96],[3.13,10.34],[3.35,11.24],[3.57,11.98],[3.79,11.53],[4.01,11.81],[4.23,12.14],[4.45,12.51],[4.67,13.00],[4.89,13.67],[5.12,14.45],[5.34,15.33],[5.56,15.85],[5.78,16.40],[6.00,17.01]] },
-  { label: 'THF2-TTE desol (6.7)', color: THF, dash: false, fill: true,
-    pts: [[1.80,0.00],[2.02,0.13],[2.24,2.41],[2.46,3.35],[2.68,5.12],[2.91,2.90],[3.14,3.57],[3.38,4.09],[3.62,4.25],[3.86,4.39],[4.10,4.56],[4.33,4.84],[4.57,5.23],[4.81,5.77],[5.05,5.89],[5.29,6.22],[5.52,6.41],[5.76,6.52],[6.00,6.73]] },
-  { label: 'FSI-DEE2 desol (9.9)', color: '#64B5F6', dash: true, fill: false,
-    pts: [[3.80,0.00],[4.02,0.23],[4.24,0.84],[4.46,1.79],[4.68,2.32],[4.91,3.67],[5.13,5.12],[5.35,6.36],[5.57,7.39],[5.79,8.24],[5.90,8.29],[6.13,8.67],[6.37,9.03],[6.60,9.43],[6.83,9.86],[7.07,7.55],[7.30,7.90],[7.53,8.20],[7.77,8.28],[8.00,8.38]] },
-  { label: 'FSI-THF2 desol (7.8)', color: '#EF9A9A', dash: true, fill: false,
-    pts: [[1.80,0.00],[2.02,-2.12],[2.24,-1.71],[2.46,-0.61],[2.68,0.51],[2.91,1.50],[3.13,2.32],[3.35,2.99],[3.57,3.48],[3.79,3.88],[4.01,4.17],[4.23,4.40],[4.45,4.55],[4.74,4.73],[4.99,4.89],[5.24,5.02],[5.50,5.20],[5.75,5.41],[6.00,5.64]] },
-  { label: 'THF4 desol (13.9)', color: '#E57373', dash: false, fill: false,
-    pts: [[1.80,0.00],[2.02,-0.63],[2.24,1.23],[2.46,3.54],[2.68,5.60],[2.91,6.59],[3.13,7.55],[3.35,8.14],[3.57,8.73],[3.79,9.25],[4.01,9.88],[4.23,10.18],[4.45,10.85],[4.67,11.57],[4.89,12.54],[5.12,12.06],[5.37,11.61],[5.58,12.12],[5.79,12.76],[6.00,13.27]] },
-  { label: 'DEE4 desol (22.1)', color: '#42A5F5', dash: false, fill: false,
-    pts: [[1.80,0.00],[2.02,-0.05],[2.24,2.65],[2.46,5.74],[2.68,8.63],[2.91,10.98],[3.13,12.92],[3.35,14.39],[3.57,15.63],[3.79,16.65],[4.01,17.54],[4.23,18.01],[4.45,22.08],[5.02,18.88],[5.27,19.35],[5.51,19.84],[5.76,20.51],[6.00,20.41]] },
-  { label: 'DEE2-TTE removal (8.7)', color: TTE, dash: false, fill: false,
-    pts: [[3.50,0.00],[3.74,-1.83],[3.97,-1.54],[4.21,-0.84],[4.45,-0.19],[4.68,0.40],[4.92,0.23],[5.16,1.17],[5.39,-0.11],[5.63,0.87],[5.87,1.97],[6.11,2.90],[6.34,3.75],[6.58,4.37],[6.82,4.72],[7.05,4.95],[7.29,5.36],[7.53,5.91],[7.76,6.26],[8.00,6.89]] },
-  { label: 'THF2-TTE removal (6.2)', color: '#FFAB91', dash: true, fill: false,
-    pts: [[3.40,0.00],[3.64,-0.11],[3.88,-1.79],[4.13,-1.54],[4.37,-3.22],[4.61,-2.91],[4.85,-2.29],[5.09,-1.62],[5.34,-1.01],[5.58,-0.43],[5.82,0.08],[6.06,0.28],[6.16,0.41],[6.42,0.86],[6.69,1.36],[6.95,1.93],[7.21,1.87],[7.47,2.21],[7.74,2.58],[8.00,2.94]] }
-].map(s => ({
-  label: s.label,
-  data: s.pts.map(p => ({x: p[0], y: p[1]})),
-  borderColor: s.color,
-  backgroundColor: s.fill ? s.color + '15' : 'transparent',
-  fill: s.fill ? 'origin' : false,
-  borderDash: s.dash ? [6,3] : [],
-  borderWidth: 2,
-  pointRadius: 2,
-  tension: 0.3
-}));
-
-new Chart(document.getElementById('chartPES'), {
-  type: 'scatter',
-  data: { datasets: pesDatasets },
-  options: {
-    responsive: true,
-    showLine: true,
-    plugins: { legend: { labels: { color: '#e6edf3', font: { size: 10 }, usePointStyle: true } } },
-    scales: {
-      x: { title: { display: true, text: 'Li-O Distance (A)', color: '#8b949e' }, ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
-      y: { title: { display: true, text: 'Relative Energy (kcal/mol)', color: '#8b949e' }, ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+  /* Scan status table */
+  secP3.appendChild(el('h3', null, 'Scan Status'));
+  const barHeaders = [
+    { text: 'Scan' }, { text: 'Reaction' }, { text: 'Points' },
+    { text: 'Status' }, { text: 'Barrier (kcal/mol)', num: true }
+  ];
+  const barRows = barriers.map(b => {
+    const tr = el('tr', b.cls ? { className: rowClass(b.cls) } : null);
+    tr.appendChild(el('td', null, b.name));
+    tr.appendChild(el('td', null, b.reaction));
+    tr.appendChild(el('td', null, b.points));
+    const stTd = el('td');
+    stTd.appendChild(statusBadge(b.status));
+    tr.appendChild(stTd);
+    if (b.barrier !== null && b.barrier !== undefined) {
+      const bTd = numTd(b.barrier, 2);
+      if (b.status === 'COMPLETE') bTd.style.fontWeight = '700';
+      tr.appendChild(bTd);
+    } else {
+      tr.appendChild(el('td', { className: 'num', style: 'color:var(--text3)' }, '--'));
     }
-  }
-});
+    return tr;
+  });
+  secP3.appendChild(buildTable(barHeaders, barRows));
 
-// 5. Barrier Comparison chart
-new Chart(document.getElementById('chartBarriers'), {
-  type: 'bar',
-  data: {
-    labels: ['DEE2-TTE\ndesol','THF2-TTE\ndesol','FSI-DEE2\ndesol','FSI-THF2\ndesol','THF4\ndesol','DEE4\ndesol','DEE2-TTE\nremoval','THF2-TTE\nremoval'],
-    datasets: [{
-      label: 'Barrier (kcal/mol)',
-      data: [17.04, 6.73, 9.86, 7.76, 13.90, 22.14, 8.72, 6.16],
-      backgroundColor: [DEE, THF, DEE+'88', THF+'88', THF+'cc', DEE+'cc', TTE, TTE+'88'],
-      borderColor: [DEE, THF, DEE, THF, THF, DEE, TTE, TTE],
-      borderWidth: 1
-    }]
-  },
-  options: { ...chartDefaults,
-    scales: { ...chartDefaults.scales,
-      y: { ...chartDefaults.scales.y, title: { display: true, text: 'Barrier (kcal/mol)', color: '#8b949e' }, beginAtZero: true }
-    }
+  /* Phase 3 mermaid diagram */
+  const p3MermBox = el('div', { className: 'mermaid-box' });
+  let desNodes = '', remNodes = '', desStyles = '', remStyles = '';
+  let di = 1, ri = 1;
+  barriers.forEach(b => {
+    const isDesol = b.name.toLowerCase().includes('desol');
+    const nodeId = isDesol ? 'D' + di++ : 'R' + ri++;
+    const label = b.barrier !== null ? b.name + '<br/>' + b.barrier + ' kcal/mol<br/>' + b.status : b.name + '<br/>' + b.status + ' ' + b.points;
+    const fill = b.status === 'COMPLETE' ? '#1a3a1a' : '#1a2a3a';
+    const stroke = b.status === 'COMPLETE' ? '#3fb950' : b.status === 'ERROR' ? '#f85149' : '#58a6ff';
+    const line = '    ' + nodeId + '["' + label + '"]\n';
+    const styleLine = '  style ' + nodeId + ' fill:' + fill + ',stroke:' + stroke + '\n';
+    if (isDesol) { desNodes += line; desStyles += styleLine; }
+    else { remNodes += line; remStyles += styleLine; }
+  });
+  const p3MermCode = `%%{init: {'theme': 'dark'}}%%
+graph TB
+  subgraph Desolvation["Desolvation Scans"]
+${desNodes}  end
+  subgraph Removal["TTE Removal Scans"]
+${remNodes}  end
+${desStyles}${remStyles}`;
+  await renderMermaid(p3MermBox, p3MermCode);
+  secP3.appendChild(p3MermBox);
+
+  /* PES chart */
+  const pesData = data.phase3_pes || {};
+  const pesKeys = Object.keys(pesData);
+  if (pesKeys.length > 0) {
+    const pesChartBox = el('div', { className: 'chart-container' });
+    pesChartBox.appendChild(el('h3', { style: 'margin-bottom:12px' }, 'PES Profiles: Desolvation (Li-O distance)'));
+    const pesCanvas = el('canvas');
+    pesChartBox.appendChild(pesCanvas);
+    secP3.appendChild(pesChartBox);
+
+    const pesDatasets = pesKeys.map(k => {
+      const s = pesData[k];
+      const barrierVal = s.data.length > 0 ? Math.max(...s.data.map(p => p[1])).toFixed(1) : '?';
+      return {
+        label: s.label + ' (' + barrierVal + ')',
+        data: s.data.map(p => ({ x: p[0], y: p[1] })),
+        borderColor: s.color,
+        backgroundColor: s.fill ? s.color + '15' : 'transparent',
+        fill: s.fill ? 'origin' : false,
+        borderDash: s.dash ? [6, 3] : [],
+        borderWidth: 2,
+        pointRadius: 2,
+        tension: 0.3
+      };
+    });
+
+    activeCharts.push(new Chart(pesCanvas, {
+      type: 'scatter',
+      data: { datasets: pesDatasets },
+      options: {
+        responsive: true, showLine: true,
+        plugins: { legend: { labels: { color: '#e6edf3', font: { size: 10 }, usePointStyle: true } } },
+        scales: {
+          x: { title: { display: true, text: 'Li-O Distance (A)', color: '#8b949e' }, ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
+          y: { title: { display: true, text: 'Relative Energy (kcal/mol)', color: '#8b949e' }, ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+        }
+      }
+    }));
   }
-});
+
+  /* Barrier comparison chart */
+  const completedBarriers = barriers.filter(b => b.barrier !== null && b.barrier !== undefined);
+  if (completedBarriers.length > 0) {
+    const barChartBox = el('div', { className: 'chart-container' });
+    barChartBox.appendChild(el('h3', { style: 'margin-bottom:12px' }, 'Barrier Comparison (kcal/mol)'));
+    const barCanvas = el('canvas');
+    barChartBox.appendChild(barCanvas);
+    secP3.appendChild(barChartBox);
+
+    const barLabels = completedBarriers.map(b => b.name);
+    const barValues = completedBarriers.map(b => b.barrier);
+    const barBg = completedBarriers.map(b => colorForCls(b.cls));
+    const barBorderColors = completedBarriers.map(b => colorForCls(b.cls));
+
+    activeCharts.push(new Chart(barCanvas, {
+      type: 'bar',
+      data: { labels: barLabels, datasets: [{ label: 'Barrier (kcal/mol)', data: barValues, backgroundColor: barBg, borderColor: barBorderColors, borderWidth: 1 }] },
+      options: { ...chartDefaults,
+        scales: { ...chartDefaults.scales,
+          y: { ...chartDefaults.scales.y, title: { display: true, text: 'Barrier (kcal/mol)', color: '#8b949e' }, beginAtZero: true }
+        }
+      }
+    }));
+  }
+  container.appendChild(secP3);
+
+  /* ========== 7. NPA ========== */
+  const secNpa = el('section', { id: 'npa' });
+  secNpa.appendChild(el('h2', null, 'NPA Charge Analysis'));
+  const npaHeaders = [
+    { text: 'Cluster' }, { text: 'Type' }, { text: 'Li (Mulliken)', num: true },
+    { text: 'Li (Loewdin)', num: true }, { text: 'CT (Mulliken)', num: true },
+    { text: 'CT (Loewdin)', num: true }, { text: 'n(O)', num: true }
+  ];
+  const npaRows = (data.npa || []).map(item => {
+    const tr = el('tr', item.cls ? { className: rowClass(item.cls) } : null);
+    tr.appendChild(el('td', null, item.name));
+    tr.appendChild(el('td', null, item.type || ''));
+    tr.appendChild(numTd(item.li_mull, 3));
+    tr.appendChild(numTd(item.li_low, 3));
+    if (item.ct_note) {
+      const ctTd = el('td', { className: 'num', colSpan: '2', style: 'text-align:center;color:var(--text3)' }, item.ct_note);
+      tr.appendChild(ctTd);
+    } else {
+      tr.appendChild(numTd(item.ct_mull, 3));
+      tr.appendChild(numTd(item.ct_low, 3));
+    }
+    tr.appendChild(numTd(item.n_o, 0));
+    return tr;
+  });
+  secNpa.appendChild(buildTable(npaHeaders, npaRows));
+  const npaNote = el('p', { style: 'color:var(--text2);font-size:0.85em' });
+  npaNote.textContent = 'DEE shows larger charge transfer per molecule than THF: DEE is a better electron donor per O atom, but THF compensates with higher coordination number.';
+  secNpa.appendChild(npaNote);
+  container.appendChild(secNpa);
+
+  /* ========== 8. RELIABILITY ========== */
+  const secRel = el('section', { id: 'reliability' });
+  secRel.appendChild(el('h2', null, 'Reliability Assessment'));
+  const relGrid = el('div', { className: 'card-grid' });
+
+  // Grade distribution card
+  const gradeCard = el('div', { className: 'card' });
+  gradeCard.appendChild(el('h3', null, 'Grade Distribution'));
+  const gradeTableRows = [
+    { badge: 'A', desc: 'True minimum (0 imag)', count: g['A'] || 0 },
+    { badge: 'A-', desc: 'Quasi-minimum (< -10 cm-1)', count: g['A-'] || 0 },
+    { badge: 'B', desc: 'Small imag (< -30 cm-1)', count: g['B'] || 0 },
+    { badge: 'C', desc: 'Significant imag', count: g['C'] || 0 }
+  ].map(item => {
+    const tr = el('tr');
+    const td1 = el('td');
+    td1.appendChild(gradeBadge(item.badge));
+    td1.appendChild(document.createTextNode(' ' + item.desc));
+    tr.appendChild(td1);
+    tr.appendChild(numTd(item.count, 0));
+    return tr;
+  });
+  const gradeTable = el('table');
+  const gradeTbody = el('tbody');
+  gradeTableRows.forEach(r => gradeTbody.appendChild(r));
+  gradeTable.appendChild(gradeTbody);
+  gradeCard.appendChild(gradeTable);
+  const totalGraded = (g['A']||0) + (g['A-']||0) + (g['B']||0) + (g['C']||0);
+  const pctA = totalGraded > 0 ? Math.round((g['A']||0) / totalGraded * 100) : 0;
+  gradeCard.appendChild(el('p', { style: 'color:var(--text2);font-size:0.85em;margin-top:8px' },
+    pctA + '% Grade A. All B grades have imaginary frequencies < -30 cm-1 (quasi-RRHO threshold).'));
+  relGrid.appendChild(gradeCard);
+
+  // Methodology card (static)
+  const methCard = el('div', { className: 'card' });
+  methCard.appendChild(el('h3', null, 'Methodology Validation'));
+  const methRows = [
+    ['Functional', 'wB97X-D3 (range-separated hybrid + D3)'],
+    ['Basis Set', 'def2-TZVP (triple-zeta)'],
+    ['Dispersion', 'Built-in D3 correction'],
+    ['Thermochemistry', 'Quasi-RRHO (Grimme, B_av)'],
+    ['SCF Convergence', 'TightSCF (1e-8 Eh)'],
+    ['RI Approximation', 'RIJCOSX / def2/J']
+  ].map(([k, v]) => {
+    const tr = el('tr');
+    tr.appendChild(el('td', null, k));
+    tr.appendChild(el('td', null, v));
+    return tr;
+  });
+  const methTable = el('table');
+  const methTbody = el('tbody');
+  methRows.forEach(r => methTbody.appendChild(r));
+  methTable.appendChild(methTbody);
+  methCard.appendChild(methTable);
+  relGrid.appendChild(methCard);
+
+  // Limitations card (static)
+  const limCard = el('div', { className: 'card' });
+  limCard.appendChild(el('h3', null, 'Known Limitations'));
+  const limUl = el('ul', { style: 'color:var(--text2);font-size:0.88em;padding-left:20px' });
+  ['Gas-phase calculations (no implicit solvent model)',
+   'Single conformer per cluster (no conformational averaging)',
+   'DEE steric constraint: max 2-coordinate (DEE3, DEE4 excluded)',
+   'Phase 3 PES: relaxed scan (not IRC), approximate barrier',
+   'BSSE not explicitly corrected (mitigated by TZVP basis)'
+  ].forEach(t => limUl.appendChild(el('li', null, t)));
+  limCard.appendChild(limUl);
+  relGrid.appendChild(limCard);
+
+  secRel.appendChild(relGrid);
+  container.appendChild(secRel);
+
+  /* ========== 9. DISCUSSION (static) ========== */
+  const discSection = document.getElementById('discussion-static');
+  discSection.style.display = '';
+  discSection.id = 'discussion';
+  container.appendChild(discSection);
+
+  /* ========== 10. PROGRESS ========== */
+  const secProg = el('section', { id: 'progress' });
+  const overallPct = totalAll > 0 ? Math.round(totalDone / totalAll * 100) : 0;
+  const h2prog = el('h2');
+  h2prog.appendChild(document.createTextNode('Progress '));
+  h2prog.appendChild(el('span', { className: 'badge', style: overallPct === 100 ? 'background:rgba(63,185,80,0.15);color:var(--gradeA)' : 'background:rgba(210,153,34,0.15);color:var(--gradeB)' }, overallPct + '%'));
+  secProg.appendChild(h2prog);
+
+  // Phase 1 bar
+  const p1Pct = p1[1] > 0 ? Math.round(p1[0] / p1[1] * 100) : 0;
+  secProg.appendChild(el('h3', null, 'Phase 1: Monomer Optimization'));
+  const pb1 = el('div', { className: 'progress-bar' });
+  pb1.appendChild(el('div', { className: 'progress-fill', style: 'width:' + p1Pct + '%;background:var(--success)' }, p1[0] + '/' + p1[1] + ' (' + p1Pct + '%)'));
+  secProg.appendChild(pb1);
+
+  // Phase 2 bar
+  const p2Pct = p2[1] > 0 ? Math.round(p2[0] / p2[1] * 100) : 0;
+  secProg.appendChild(el('h3', null, 'Phase 2: Solvation Clusters'));
+  const pb2 = el('div', { className: 'progress-bar' });
+  pb2.appendChild(el('div', { className: 'progress-fill', style: 'width:' + p2Pct + '%;background:var(--success)' }, p2[0] + '/' + p2[1] + ' (' + p2Pct + '%) + ' + nCip + ' CIP'));
+  secProg.appendChild(pb2);
+
+  // Phase 3 bar
+  secProg.appendChild(el('h3', null, 'Phase 3: Desolvation PES Scans'));
+  const pb3 = el('div', { className: 'progress-bar' });
+  const p3Color = p3Pct === 100 ? 'var(--success)' : 'var(--accent)';
+  pb3.appendChild(el('div', { className: 'progress-fill', style: 'width:' + p3Pct + '%;background:' + p3Color }, p3[0] + '/' + p3[1] + ' complete (' + p3Pct + '%)'));
+  secProg.appendChild(pb3);
+
+  container.appendChild(secProg);
+}
+
+/* ===== SERVER LOADING ===== */
+async function loadServers() {
+  const bar = document.getElementById('server-bar');
+  try {
+    const resp = await fetch('data/servers.txt');
+    if (!resp.ok) throw new Error('Failed to load servers.txt: ' + resp.status);
+    const text = await resp.text();
+    const ids = text.trim().split('\n').map(s => s.trim()).filter(s => s.length > 0);
+    if (ids.length === 0) throw new Error('No servers found in servers.txt');
+
+    // Find the most recently updated server
+    let bestId = ids[0];
+    let bestTime = 0;
+    const metaPromises = ids.map(async id => {
+      try {
+        const r = await fetch('data/' + id + '.json');
+        if (!r.ok) return null;
+        const d = await r.json();
+        const t = new Date(d.meta.updated).getTime();
+        return { id, time: t };
+      } catch { return null; }
+    });
+    const metas = await Promise.all(metaPromises);
+    metas.forEach(m => {
+      if (m && m.time > bestTime) { bestTime = m.time; bestId = m.id; }
+    });
+
+    // Create server buttons
+    ids.forEach(id => {
+      const btn = document.createElement('button');
+      btn.className = 'server-btn';
+      btn.textContent = id;
+      btn.dataset.serverId = id;
+      btn.addEventListener('click', () => selectServer(id));
+      bar.appendChild(btn);
+    });
+
+    // Select the most recent server
+    await selectServer(bestId);
+  } catch (err) {
+    const errDiv = el('div', { className: 'error-msg' }, 'Server list load error: ' + err.message);
+    document.getElementById('dynamic-content').textContent = '';
+    document.getElementById('dynamic-content').appendChild(errDiv);
+  }
+}
+
+async function selectServer(serverId) {
+  if (currentServerId === serverId) return;
+  currentServerId = serverId;
+
+  // Highlight active button
+  document.querySelectorAll('.server-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.serverId === serverId);
+  });
+
+  // Show loading
+  const container = document.getElementById('dynamic-content');
+  container.textContent = '';
+  container.appendChild(el('div', { className: 'loading-msg' }, 'Loading ' + serverId + '...'));
+
+  try {
+    const resp = await fetch('data/' + serverId + '.json');
+    if (!resp.ok) throw new Error('Failed to load ' + serverId + '.json: ' + resp.status);
+    const data = await resp.json();
+    await renderDashboard(data);
+  } catch (err) {
+    container.textContent = '';
+    container.appendChild(el('div', { className: 'error-msg' }, 'Data load error: ' + err.message));
+  }
+}
+
+/* ===== BOOT ===== */
+loadServers();
 </script>
 </body>
 </html>

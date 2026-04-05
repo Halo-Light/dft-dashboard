@@ -1,8 +1,8 @@
 {
   "meta": {
     "server_id": "pitin",
-    "updated": "2026-04-05T14:53:45+09:00",
-    "running_orca": 2
+    "updated": "2026-04-05T18:41:00+09:00",
+    "running_orca": 34
   },
   "phase1": [
     {
@@ -72,7 +72,7 @@
       "dG": -34.73,
       "TdS": -11.26,
       "grade": "B",
-      "notes": "1 imag (-25 cm-1"
+      "notes": "1 imag (-25 cm-1)"
     },
     {
       "label": "Li(THF)1",
@@ -83,7 +83,7 @@
       "dG": -34.95,
       "TdS": -5.91,
       "grade": "A",
-      "notes": "0 imag after disp reopt (true minimum"
+      "notes": "0 imag after disp reopt (true minimum)"
     },
     {
       "label": "Li(THF)2",
@@ -129,7 +129,7 @@
       "dG": -34.16,
       "TdS": -28.75,
       "grade": "A-",
-      "notes": "1 imag (-6.6 cm-1"
+      "notes": "1 imag (-6.6 cm-1)"
     },
     {
       "label": "Li(THF)2(TTE)1",
@@ -181,7 +181,11 @@
       "label": "Li(FSI)(DEE)1",
       "cls": "dee",
       "dE": -154.08,
+      "dE_ZPE": -151.34,
+      "dH": -151.82,
       "dG": -136.75,
+      "li_o_fsi": "1.892 / 1.897",
+      "li_o_solv": "1.909",
       "grade": "A",
       "notes": "0 imag"
     },
@@ -189,7 +193,11 @@
       "label": "Li(FSI)(DEE)2",
       "cls": "dee",
       "dE": -171.34,
+      "dE_ZPE": -167.21,
+      "dH": -167.69,
       "dG": -142.22,
+      "li_o_fsi": "1.981 / 1.986",
+      "li_o_solv": "2.006 / 2.007",
       "grade": "A",
       "notes": "0 imag"
     },
@@ -197,7 +205,11 @@
       "label": "Li(FSI)(THF)1",
       "cls": "thf",
       "dE": -155.62,
+      "dE_ZPE": -152.7,
+      "dH": -153.41,
       "dG": -137.46,
+      "li_o_fsi": "1.898 / 1.886",
+      "li_o_solv": "1.891",
       "grade": "A",
       "notes": "0 imag"
     },
@@ -205,7 +217,11 @@
       "label": "Li(FSI)(THF)2",
       "cls": "thf",
       "dE": -173.64,
+      "dE_ZPE": -169.68,
+      "dH": -170.63,
       "dG": -143.93,
+      "li_o_fsi": "1.965 / 1.933",
+      "li_o_solv": "1.930 / 1.944",
       "grade": "B",
       "notes": "1 imag (-12.28 cm-1)"
     },
@@ -213,6 +229,8 @@
       "label": "Li(FSI)(THF)3",
       "cls": "thf",
       "dE": -190.14,
+      "dE_ZPE": -185.19,
+      "dH": -184.22,
       "dG": -155.79,
       "grade": "A",
       "notes": "0 imag (reopt true minimum)"
@@ -222,6 +240,9 @@
     {
       "cat": "Solvation",
       "pair": "n=1",
+      "dE_dee": -39.58,
+      "dE_thf": -41.72,
+      "ddE": -2.14,
       "dG_dee": -33.25,
       "dG_thf": -34.95,
       "ddG": -1.69,
@@ -230,14 +251,31 @@
     {
       "cat": "Solvation",
       "pair": "n=2",
+      "dE_dee": -44.94,
+      "dE_thf": -75.42,
+      "ddE": -30.49,
       "dG_dee": -34.73,
       "dG_thf": -59.2,
       "ddG": -24.48,
       "interp": "DEE Grade B / THF Grade A"
     },
     {
+      "cat": "Solvation",
+      "pair": "n=4",
+      "dE_dee": null,
+      "dE_thf": -122.15,
+      "ddE": null,
+      "dG_dee": null,
+      "dG_thf": -90.57,
+      "ddG": null,
+      "interp": "DEE 4-coord impossible (steric)"
+    },
+    {
       "cat": "TTE mixed",
       "pair": "n=2 m=1 TTE",
+      "dE_dee": -41.09,
+      "dE_thf": -69.79,
+      "ddE": -28.7,
       "dG_dee": -18.51,
       "dG_thf": -47.53,
       "ddG": -29.02,
@@ -246,6 +284,9 @@
     {
       "cat": "TTE mixed",
       "pair": "n=1 m=2 TTE",
+      "dE_dee": -30.34,
+      "dE_thf": -65.16,
+      "ddE": -34.82,
       "dG_dee": -9.56,
       "dG_thf": -34.16,
       "ddG": -24.61,
@@ -254,6 +295,9 @@
     {
       "cat": "CIP",
       "pair": "n=1 CIP",
+      "dE_dee": -154.08,
+      "dE_thf": -155.62,
+      "ddE": -1.54,
       "dG_dee": -136.75,
       "dG_thf": -137.46,
       "ddG": -0.71,
@@ -262,6 +306,9 @@
     {
       "cat": "CIP",
       "pair": "n=2 CIP",
+      "dE_dee": -171.34,
+      "dE_thf": -173.64,
+      "ddE": -2.3,
       "dG_dee": -142.22,
       "dG_thf": -143.93,
       "ddG": -1.71,
@@ -297,7 +344,7 @@
   ],
   "phase3_barriers": [
     {
-      "name": "DEE2 TTE desolvation",
+      "name": "DEE2-TTE desolvation",
       "cls": "dee",
       "reaction": "Li+(DEE)2(TTE) -> Li+(DEE)(TTE) + DEE",
       "points": "20/20",
@@ -305,7 +352,7 @@
       "barrier": 17.01
     },
     {
-      "name": "THF2 TTE desolvation",
+      "name": "THF2-TTE desolvation",
       "cls": "thf",
       "reaction": "Li+(THF)2(TTE) -> Li+(THF)(TTE) + THF",
       "points": "19/20",
@@ -313,7 +360,7 @@
       "barrier": 6.73
     },
     {
-      "name": "FSI DEE2 desolvation",
+      "name": "FSI-DEE2 desolvation",
       "cls": "dee",
       "reaction": "Li+FSI-(DEE)2 -> Li+FSI-(DEE) + DEE",
       "points": "20/20",
@@ -321,7 +368,7 @@
       "barrier": 9.86
     },
     {
-      "name": "FSI THF2 desolvation",
+      "name": "FSI-THF2 desolvation",
       "cls": "thf",
       "reaction": "Li+FSI-(THF)2 -> Li+FSI-(THF) + THF",
       "points": "19/20",
@@ -329,7 +376,7 @@
       "barrier": 5.64
     },
     {
-      "name": "DEE2 TTE removal",
+      "name": "DEE2-TTE removal",
       "cls": "dee",
       "reaction": "Li+(DEE)2(TTE) -> Li+(DEE)2 + TTE",
       "points": "20/20",
@@ -353,7 +400,7 @@
       "barrier": 22.08
     },
     {
-      "name": "THF2 TTE removal",
+      "name": "THF2-TTE removal",
       "cls": "thf",
       "reaction": "Li+(THF)2(TTE) -> Li+(THF)2 + TTE",
       "points": "20/20",
@@ -361,7 +408,7 @@
       "barrier": 2.94
     },
     {
-      "name": "DEE1 TTE2 removal",
+      "name": "DEE1-TTE2 removal",
       "cls": "dee",
       "reaction": "Li+(DEE)(TTE)2 -> Li+(DEE)(TTE) + TTE",
       "points": "1/20",
@@ -369,7 +416,7 @@
       "barrier": null
     },
     {
-      "name": "THF1 TTE2 removal",
+      "name": "THF1-TTE2 removal",
       "cls": "thf",
       "reaction": "Li+(THF)(TTE)2 -> Li+(THF)(TTE) + TTE",
       "points": "3/20",
@@ -1069,7 +1116,7 @@
   },
   "npa": [
     {
-      "name": "Li(DEE1)",
+      "name": "Li(DEE)1",
       "cls": "dee",
       "type": "Pure",
       "li_mull": 0.907,
@@ -1080,7 +1127,7 @@
       "ct_note": null
     },
     {
-      "name": "Li(DEE2)",
+      "name": "Li(DEE)2",
       "cls": "dee",
       "type": "Pure",
       "li_mull": 0.616,
@@ -1091,7 +1138,7 @@
       "ct_note": null
     },
     {
-      "name": "Li(FSI)(DEE1)",
+      "name": "Li(FSI)(DEE)1",
       "cls": "dee",
       "type": "CIP",
       "li_mull": 0.829,
@@ -1102,7 +1149,7 @@
       "ct_note": "FSI- dominated"
     },
     {
-      "name": "Li(FSI)(DEE2)",
+      "name": "Li(FSI)(DEE)2",
       "cls": "dee",
       "type": "CIP",
       "li_mull": 0.778,
@@ -1113,7 +1160,7 @@
       "ct_note": "FSI- dominated"
     },
     {
-      "name": "Li(THF1)",
+      "name": "Li(THF)1",
       "cls": "thf",
       "type": "Pure",
       "li_mull": 0.928,
@@ -1124,7 +1171,7 @@
       "ct_note": null
     },
     {
-      "name": "Li(THF2)",
+      "name": "Li(THF)2",
       "cls": "thf",
       "type": "Pure",
       "li_mull": 0.878,
@@ -1135,7 +1182,7 @@
       "ct_note": null
     },
     {
-      "name": "Li(THF4)",
+      "name": "Li(THF)4",
       "cls": "thf",
       "type": "Pure",
       "li_mull": 0.779,
