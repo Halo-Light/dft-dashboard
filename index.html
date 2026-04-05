@@ -209,30 +209,7 @@ tr:hover td { background: rgba(88,166,255,0.04); }
 </div>
 </section>
 
-<!-- STATIC: DISCUSSION -->
-<section id="discussion-static" style="display:none">
-<h2>Scientific Discussion</h2>
-
-<div class="disc-item">
-  <h4>1. Solvation Thermodynamics: THF Always Wins</h4>
-  <p>At 233K, THF forms <span class="highlight">dramatically stronger</span> solvation shells than DEE. For n=2: DDG = -24.5 kcal/mol in THF's favor. The cyclic rigidity of THF allows efficient packing around Li<sup>+</sup> (up to 4-coordinate), while DEE's linear flexibility causes steric exclusion beyond n=2. This <span class="highlight">asymmetric coordination capacity</span> is the fundamental structural difference.</p>
-</div>
-
-<div class="disc-item">
-  <h4>2. TTE Effect: Entropy-Driven Destabilization</h4>
-  <p>TTE systematically weakens solvation (dG becomes less negative) through massive <span class="highlight">entropy penalties</span>. Li(THF)<sub>2</sub>(TTE)<sub>2</sub> has dG = <span style="color:var(--fail)">+3.65 kcal/mol</span> (thermodynamically unfavorable) despite dH = -30.85 kcal/mol. The TdS penalty scales with TTE count: -16.5 (1 TTE) &rarr; -28.8 (2 TTE) &rarr; -34.5 kcal/mol (2 TTE + 2 solvent). This confirms TTE's role as a <span class="highlight">non-coordinating diluent</span> that creates entropy-driven lability in the solvation shell.</p>
-</div>
-
-<div class="disc-item">
-  <h4>3. The Barrier Paradox: Weaker Binding, Higher Barrier?</h4>
-  <p>Preliminary Phase 3 data reveals a <span class="highlight">counterintuitive</span> trend: DEE desolvation barriers (17.0 kcal/mol) are <span style="color:var(--dee)">significantly higher</span> than THF (6.7 kcal/mol), despite DEE having weaker binding. Two hypotheses: (1) DEE's linear geometry creates a <span class="highlight">conformational trap</span> &mdash; the transition state requires an unfavorable geometry that cyclic THF avoids, or (2) the Li-O(TTE) interaction provides a <span class="highlight">better relay</span> for THF displacement. CIP barriers show a similar but reduced trend (9.9 vs 5.6 kcal/mol), suggesting FSI<sup>-</sup> partially compensates.</p>
-</div>
-
-<div class="disc-item">
-  <h4>4. Entropy as the Hidden Variable</h4>
-  <p>Temperature dependence analysis shows <span class="highlight">dG shifts 8-12 kcal/mol</span> between 298K and 223K for TTE-containing clusters. The implication: at low temperature, entropy penalties decrease, making the TTE-disrupted shells <span class="highlight">relatively more stable</span>. This means the LHCE design principle (TTE dilution) becomes <span class="highlight">less effective</span> at low T. The practical consequence: DEE's inherently weaker binding (less entropy penalty at low T) may translate to <span class="highlight">easier desolvation kinetics</span> despite the paradoxical PES barrier.</p>
-</div>
-</section>
+<!-- Discussion is now rendered dynamically from JSON data -->
 
 <!-- Footer -->
 <div id="footer" style="text-align:center; margin-top:32px; padding:16px; color:var(--text3); font-size:0.8em; border-top:1px solid var(--border);">
@@ -372,6 +349,8 @@ async function renderDashboard(data) {
   const container = document.getElementById('dynamic-content');
   container.textContent = '';
 
+  try {
+
   const p = data.progress || {};
   const g = data.grades || {};
   const p1 = p.phase1 || [0,0];
@@ -467,10 +446,14 @@ graph LR
   secPipeline.appendChild(pipeBox);
   container.appendChild(secPipeline);
 
-  /* ========== 3. DESCRIPTORS (static) ========== */
-  const descSection = document.getElementById('descriptors');
-  descSection.style.display = '';
-  container.appendChild(descSection);
+  /* ========== 3. DESCRIPTORS (static, clone) ========== */
+  const descSource = document.getElementById('descriptors');
+  if (descSource) {
+    const descSection = descSource.cloneNode(true);
+    descSection.removeAttribute('id');
+    descSection.style.display = '';
+    container.appendChild(descSection);
+  }
 
   /* ========== 4. PHASE 1 ========== */
   const secP1 = el('section', { id: 'phase1' });
@@ -911,11 +894,70 @@ ${desStyles}${remStyles}`;
   secRel.appendChild(relGrid);
   container.appendChild(secRel);
 
-  /* ========== 9. DISCUSSION (static) ========== */
-  const discSection = document.getElementById('discussion-static');
-  discSection.style.display = '';
-  discSection.id = 'discussion';
-  container.appendChild(discSection);
+  /* ========== 9. DISCUSSION (dynamic from data) ========== */
+  const secDisc = el('section', { id: 'discussion' });
+  secDisc.appendChild(el('h2', null, 'Scientific Discussion'));
+
+  // Extract values for discussion
+  const ddgN2 = (data.phase2_ddg || []).find(x => x.pair === 'n=2');
+  const thf2tte2 = (data.phase2_tte || []).find(x => x.label && x.label.includes('THF)2(TTE)2'));
+  const thf1tte1 = (data.phase2_tte || []).find(x => x.label && x.label.includes('THF)1(TTE)1'));
+  const thf1tte2 = (data.phase2_tte || []).find(x => x.label && x.label.includes('THF)1(TTE)2'));
+  const bDee = (data.phase3_barriers || []).find(x => x.name && x.name.includes('DEE2-TTE desol'));
+  const bThf = (data.phase3_barriers || []).find(x => x.name && x.name.includes('THF2-TTE desol'));
+  const bCipDee = (data.phase3_barriers || []).find(x => x.name && x.name.includes('FSI-DEE2'));
+  const bCipThf = (data.phase3_barriers || []).find(x => x.name && x.name.includes('FSI-THF2'));
+
+  const ddgVal = ddgN2 ? ddgN2.ddG.toFixed(1) : '?';
+  const tte2dG = thf2tte2 ? (thf2tte2.dG > 0 ? '+' : '') + thf2tte2.dG.toFixed(2) : '?';
+  const tte2dH = thf2tte2 ? thf2tte2.dH.toFixed(2) : '?';
+  const tds1 = thf1tte1 ? thf1tte1.TdS.toFixed(1) : '?';
+  const tds2 = thf1tte2 ? thf1tte2.TdS.toFixed(1) : '?';
+  const tds3 = thf2tte2 ? thf2tte2.TdS.toFixed(1) : '?';
+  const bDeeVal = bDee && bDee.barrier ? bDee.barrier.toFixed(1) : '?';
+  const bThfVal = bThf && bThf.barrier ? bThf.barrier.toFixed(1) : '?';
+  const bCipDeeVal = bCipDee && bCipDee.barrier ? bCipDee.barrier.toFixed(1) : '?';
+  const bCipThfVal = bCipThf && bCipThf.barrier ? bCipThf.barrier.toFixed(1) : '?';
+
+  function discItem(title, htmlText) {
+    const d = el('div', { className: 'disc-item' });
+    d.appendChild(el('h4', null, title));
+    const p = el('p');
+    p.innerHTML = htmlText;
+    d.appendChild(p);
+    return d;
+  }
+
+  // Priority: JSON discussion field > auto-generated fallback
+  if (data.discussion && data.discussion.length > 0) {
+    data.discussion.forEach(item => {
+      secDisc.appendChild(discItem(item.title, item.html));
+    });
+  } else {
+    // Fallback: auto-generate from numerical data
+    secDisc.appendChild(discItem('1. Solvation Thermodynamics: THF Always Wins',
+      'At 233K, THF forms <span class="highlight">dramatically stronger</span> solvation shells than DEE. ' +
+      'For n=2: &Delta;&Delta;G = <b>' + ddgVal + '</b> kcal/mol in THF\'s favor. ' +
+      'The cyclic rigidity of THF allows efficient packing around Li<sup>+</sup> (up to 4-coordinate), ' +
+      'while DEE\'s linear flexibility causes steric exclusion beyond n=2. ' +
+      'This <span class="highlight">asymmetric coordination capacity</span> is the fundamental structural difference.'
+    ));
+    secDisc.appendChild(discItem('2. TTE Effect: Entropy-Driven Destabilization',
+      'TTE systematically weakens solvation through massive <span class="highlight">entropy penalties</span>. ' +
+      'Li(THF)<sub>2</sub>(TTE)<sub>2</sub> has &Delta;G = <span style="color:var(--fail)">' + tte2dG + ' kcal/mol</span> ' +
+      'despite &Delta;H = ' + tte2dH + ' kcal/mol. T&Delta;S penalty: ' + tds1 + ' &rarr; ' + tds2 + ' &rarr; ' + tds3 + ' kcal/mol.'
+    ));
+    secDisc.appendChild(discItem('3. The Barrier Paradox',
+      'DEE barriers (<span style="color:var(--dee)">' + bDeeVal + '</span>) &gt; THF (<span style="color:var(--thf)">' + bThfVal + '</span>) kcal/mol, despite weaker binding. ' +
+      'CIP: ' + bCipDeeVal + ' vs ' + bCipThfVal + ' kcal/mol.'
+    ));
+    secDisc.appendChild(discItem('4. Entropy as the Hidden Variable',
+      '&Delta;G shifts 8-12 kcal/mol between 298K and 223K for TTE clusters. ' +
+      'LHCE design becomes <span class="highlight">less effective</span> at low T.'
+    ));
+  }
+
+  container.appendChild(secDisc);
 
   /* ========== 10. PROGRESS ========== */
   const secProg = el('section', { id: 'progress' });
@@ -947,6 +989,11 @@ ${desStyles}${remStyles}`;
   secProg.appendChild(pb3);
 
   container.appendChild(secProg);
+
+  } catch (renderErr) {
+    container.appendChild(el('div', { className: 'error-msg' }, 'Render error: ' + renderErr.message + ' (line: ' + renderErr.stack?.split('\n')[1]?.trim() + ')'));
+    console.error('renderDashboard error:', renderErr);
+  }
 }
 
 /* ===== SERVER LOADING ===== */
