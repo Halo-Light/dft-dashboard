@@ -191,7 +191,7 @@ tr:hover td { background: rgba(88,166,255,0.04); }
 graph LR
   P1["Phase 1<br/>Monomer Opt+Freq<br/><b>5/5 DONE</b>"] -->|ZPE, reference energies| P2
   P2["Phase 2<br/>Solvation Clusters<br/><b>16/16 DONE</b>"] -->|Optimized geometries| P3
-  P3["Phase 3<br/>Desolvation PES<br/><b>6/10 done</b>"]
+  P3["Phase 3<br/>Desolvation PES<br/><b>8/10 done</b>"]
 
   P2 -->|CIP structures| P2C["Phase 2 CIP<br/>FSI Contact Pairs<br/><b>5/5 DONE</b>"]
 
@@ -354,16 +354,16 @@ graph LR
   <tr><th>Scan</th><th>Reaction</th><th>Points</th><th>Status</th><th class="num">Barrier (kcal/mol)</th></tr>
 </thead>
 <tbody>
-  <tr class="dee-row"><td>DEE2-TTE desolvation</td><td>Li<sup>+</sup>(DEE)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(DEE)(TTE) + DEE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>17.01</b></td></tr>
+  <tr class="dee-row"><td>DEE2-TTE desolvation</td><td>Li<sup>+</sup>(DEE)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(DEE)(TTE) + DEE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>17.04</b></td></tr>
   <tr class="thf-row"><td>THF2-TTE desolvation</td><td>Li<sup>+</sup>(THF)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(THF)(TTE) + THF</td><td>19/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>6.73</b></td></tr>
   <tr class="dee-row"><td>FSI-DEE2 desolvation</td><td>Li<sup>+</sup>FSI<sup>-</sup>(DEE)<sub>2</sub> &rarr; Li<sup>+</sup>FSI<sup>-</sup>(DEE) + DEE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>9.86</b></td></tr>
-  <tr class="thf-row"><td>FSI-THF2 desolvation</td><td>Li<sup>+</sup>FSI<sup>-</sup>(THF)<sub>2</sub> &rarr; Li<sup>+</sup>FSI<sup>-</sup>(THF) + THF</td><td>19/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>5.64</b></td></tr>
-  <tr class="thf-row"><td>THF4 desolvation</td><td>Li<sup>+</sup>(THF)<sub>4</sub> &rarr; Li<sup>+</sup>(THF)<sub>3</sub> + THF</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>13.27</b></td></tr>
-  <tr class="dee-row"><td>DEE4 desolvation</td><td>Li<sup>+</sup>(DEE)<sub>4</sub> &rarr; Li<sup>+</sup>(DEE)<sub>3</sub> + DEE</td><td>18/20</td><td><span class="status status-running">RUNNING</span></td><td class="num">22.08</td></tr>
-  <tr class="dee-row"><td>DEE2-TTE removal</td><td>Li<sup>+</sup>(DEE)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(DEE)<sub>2</sub> + TTE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>6.89</b></td></tr>
-  <tr class="thf-row"><td>THF2-TTE removal</td><td>Li<sup>+</sup>(THF)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(THF)<sub>2</sub> + TTE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>2.94</b></td></tr>
-  <tr class="dee-row"><td>DEE1-TTE2 removal</td><td>Li<sup>+</sup>(DEE)(TTE)<sub>2</sub> &rarr; Li<sup>+</sup>(DEE)(TTE) + TTE</td><td>1/20</td><td><span class="status status-running">RUNNING</span></td><td class="num" style="color:var(--text3)">--</td></tr>
-  <tr class="thf-row"><td>THF1-TTE2 removal</td><td>Li<sup>+</sup>(THF)(TTE)<sub>2</sub> &rarr; Li<sup>+</sup>(THF)(TTE) + TTE</td><td>3/20</td><td><span class="status status-running">RUNNING</span></td><td class="num">0.30</td></tr>
+  <tr class="thf-row"><td>FSI-THF2 desolvation</td><td>Li<sup>+</sup>FSI<sup>-</sup>(THF)<sub>2</sub> &rarr; Li<sup>+</sup>FSI<sup>-</sup>(THF) + THF</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>7.76</b></td></tr>
+  <tr class="thf-row"><td>THF4 desolvation</td><td>Li<sup>+</sup>(THF)<sub>4</sub> &rarr; Li<sup>+</sup>(THF)<sub>3</sub> + THF</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>13.90</b></td></tr>
+  <tr class="dee-row"><td>DEE4 desolvation</td><td>Li<sup>+</sup>(DEE)<sub>4</sub> &rarr; Li<sup>+</sup>(DEE)<sub>3</sub> + DEE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>22.14</b></td></tr>
+  <tr class="dee-row"><td>DEE2-TTE removal</td><td>Li<sup>+</sup>(DEE)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(DEE)<sub>2</sub> + TTE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>8.72</b></td></tr>
+  <tr class="thf-row"><td>THF2-TTE removal</td><td>Li<sup>+</sup>(THF)<sub>2</sub>(TTE) &rarr; Li<sup>+</sup>(THF)<sub>2</sub> + TTE</td><td>20/20</td><td><span class="status status-complete">COMPLETE</span></td><td class="num"><b>6.16</b></td></tr>
+  <tr class="dee-row"><td>DEE1-TTE2 removal</td><td>Li<sup>+</sup>(DEE)(TTE)<sub>2</sub> &rarr; Li<sup>+</sup>(DEE)(TTE) + TTE</td><td>1/20</td><td><span class="status status-error">ERROR</span></td><td class="num" style="color:var(--text3)">--</td></tr>
+  <tr class="thf-row"><td>THF1-TTE2 removal</td><td>Li<sup>+</sup>(THF)(TTE)<sub>2</sub> &rarr; Li<sup>+</sup>(THF)(TTE) + TTE</td><td>3/20</td><td><span class="status status-running">RUNNING</span></td><td class="num">0.67</td></tr>
 </tbody>
 </table>
 
@@ -371,17 +371,17 @@ graph LR
 %%{init: {'theme': 'dark'}}%%
 graph TB
   subgraph Desolvation["Desolvation Scans"]
-    D1["DEE2-TTE desol<br/>17.01 kcal/mol<br/>COMPLETE"]
+    D1["DEE2-TTE desol<br/>17.04 kcal/mol<br/>COMPLETE"]
     T1["THF2-TTE desol<br/>6.73 kcal/mol<br/>COMPLETE"]
     D2["FSI-DEE2 desol<br/>9.86 kcal/mol<br/>COMPLETE"]
-    T2["FSI-THF2 desol<br/>5.64 kcal/mol<br/>COMPLETE"]
-    T3["THF4 desol<br/>13.27 kcal/mol<br/>COMPLETE"]
-    D3["DEE4 desol<br/>22.08 kcal/mol<br/>RUNNING"]
+    T2["FSI-THF2 desol<br/>7.76 kcal/mol<br/>COMPLETE"]
+    T3["THF4 desol<br/>13.90 kcal/mol<br/>COMPLETE"]
+    D3["DEE4 desol<br/>22.14 kcal/mol<br/>COMPLETE"]
   end
   subgraph Removal["TTE Removal Scans"]
-    R1["DEE2-TTE removal<br/>6.89 kcal/mol<br/>COMPLETE"]
-    R2["THF2-TTE removal<br/>2.94 kcal/mol<br/>COMPLETE"]
-    R3["DEE1-TTE2 removal<br/>RUNNING 1/20"]
+    R1["DEE2-TTE removal<br/>8.72 kcal/mol<br/>COMPLETE"]
+    R2["THF2-TTE removal<br/>6.16 kcal/mol<br/>COMPLETE"]
+    R3["DEE1-TTE2 removal<br/>ERROR 1/20"]
     R4["THF1-TTE2 removal<br/>RUNNING 3/20"]
   end
   style D1 fill:#1a3a1a,stroke:#3fb950
@@ -502,7 +502,7 @@ graph TB
 
 <!-- 10. PROGRESS -->
 <section id="progress">
-<h2>Progress <span class="badge" style="background:rgba(210,153,34,0.15);color:var(--gradeB)">72%</span></h2>
+<h2>Progress <span class="badge" style="background:rgba(210,153,34,0.15);color:var(--gradeB)">80%</span></h2>
 
 <h3>Phase 1: Monomer Optimization</h3>
 <div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--success)">5/5 (100%)</div></div>
@@ -511,7 +511,7 @@ graph TB
 <div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--success)">16/16 (100%) + 5 CIP</div></div>
 
 <h3>Phase 3: Desolvation PES Scans</h3>
-<div class="progress-bar"><div class="progress-fill" style="width:60%;background:var(--accent)">6/10 complete (60%)</div></div>
+<div class="progress-bar"><div class="progress-fill" style="width:80%;background:var(--accent)">8/10 complete (80%)</div></div>
 
 <h3>Currently Running</h3>
 <table>
@@ -661,22 +661,22 @@ new Chart(document.getElementById('chartDDG'), {
 
 // 4. PES Profile chart
 const pesDatasets = [
-  { label: 'DEE2-TTE desol (17.0)', color: DEE, dash: false, fill: true,
+  { label: 'DEE2-TTE desol (17.04)', color: DEE, dash: false, fill: true,
     pts: [[1.80,0.00],[2.02,-0.03],[2.24,2.52],[2.46,4.93],[2.68,7.17],[2.91,8.96],[3.13,10.34],[3.35,11.24],[3.57,11.98],[3.79,11.53],[4.01,11.81],[4.23,12.14],[4.45,12.51],[4.67,13.00],[4.89,13.67],[5.12,14.45],[5.34,15.33],[5.56,15.85],[5.78,16.40],[6.00,17.01]] },
   { label: 'THF2-TTE desol (6.7)', color: THF, dash: false, fill: true,
     pts: [[1.80,0.00],[2.02,0.13],[2.24,2.41],[2.46,3.35],[2.68,5.12],[2.91,2.90],[3.14,3.57],[3.38,4.09],[3.62,4.25],[3.86,4.39],[4.10,4.56],[4.33,4.84],[4.57,5.23],[4.81,5.77],[5.05,5.89],[5.29,6.22],[5.52,6.41],[5.76,6.52],[6.00,6.73]] },
   { label: 'FSI-DEE2 desol (9.9)', color: '#64B5F6', dash: true, fill: false,
     pts: [[3.80,0.00],[4.02,0.23],[4.24,0.84],[4.46,1.79],[4.68,2.32],[4.91,3.67],[5.13,5.12],[5.35,6.36],[5.57,7.39],[5.79,8.24],[5.90,8.29],[6.13,8.67],[6.37,9.03],[6.60,9.43],[6.83,9.86],[7.07,7.55],[7.30,7.90],[7.53,8.20],[7.77,8.28],[8.00,8.38]] },
-  { label: 'FSI-THF2 desol (5.6)', color: '#EF9A9A', dash: true, fill: false,
+  { label: 'FSI-THF2 desol (7.8)', color: '#EF9A9A', dash: true, fill: false,
     pts: [[1.80,0.00],[2.02,-2.12],[2.24,-1.71],[2.46,-0.61],[2.68,0.51],[2.91,1.50],[3.13,2.32],[3.35,2.99],[3.57,3.48],[3.79,3.88],[4.01,4.17],[4.23,4.40],[4.45,4.55],[4.74,4.73],[4.99,4.89],[5.24,5.02],[5.50,5.20],[5.75,5.41],[6.00,5.64]] },
-  { label: 'THF4 desol (13.3)', color: '#E57373', dash: false, fill: false,
-    pts: [[1.80,0.00],[2.02,-0.63],[2.24,1.23],[2.46,3.54],[2.68,5.60],[2.91,6.59],[3.13,7.55],[3.35,8.14],[3.57,8.73],[3.79,9.25],[4.01,9.88],[4.23,10.18],[4.45,10.85],[4.67,11.57],[4.89,12.54],[5.12,12.06]] },
+  { label: 'THF4 desol (13.9)', color: '#E57373', dash: false, fill: false,
+    pts: [[1.80,0.00],[2.02,-0.63],[2.24,1.23],[2.46,3.54],[2.68,5.60],[2.91,6.59],[3.13,7.55],[3.35,8.14],[3.57,8.73],[3.79,9.25],[4.01,9.88],[4.23,10.18],[4.45,10.85],[4.67,11.57],[4.89,12.54],[5.12,12.06],[5.37,11.61],[5.58,12.12],[5.79,12.76],[6.00,13.27]] },
   { label: 'DEE4 desol (22.1)', color: '#42A5F5', dash: false, fill: false,
-    pts: [[1.80,0.00],[2.02,-0.05],[2.24,2.65],[2.46,5.74],[2.68,8.63],[2.91,10.98],[3.13,12.92],[3.35,14.39],[3.57,15.63],[3.79,16.65],[4.01,17.54],[4.23,18.01],[4.45,22.08]] },
-  { label: 'DEE2-TTE removal (6.9)', color: TTE, dash: false, fill: false,
+    pts: [[1.80,0.00],[2.02,-0.05],[2.24,2.65],[2.46,5.74],[2.68,8.63],[2.91,10.98],[3.13,12.92],[3.35,14.39],[3.57,15.63],[3.79,16.65],[4.01,17.54],[4.23,18.01],[4.45,22.08],[5.02,18.88],[5.27,19.35],[5.51,19.84],[5.76,20.51],[6.00,20.41]] },
+  { label: 'DEE2-TTE removal (8.7)', color: TTE, dash: false, fill: false,
     pts: [[3.50,0.00],[3.74,-1.83],[3.97,-1.54],[4.21,-0.84],[4.45,-0.19],[4.68,0.40],[4.92,0.23],[5.16,1.17],[5.39,-0.11],[5.63,0.87],[5.87,1.97],[6.11,2.90],[6.34,3.75],[6.58,4.37],[6.82,4.72],[7.05,4.95],[7.29,5.36],[7.53,5.91],[7.76,6.26],[8.00,6.89]] },
-  { label: 'THF2-TTE removal (2.9)', color: '#FFAB91', dash: true, fill: false,
-    pts: [[3.40,0.00],[3.64,-0.11],[3.88,-1.79],[4.13,-1.54],[4.37,-3.22],[4.61,-2.91],[4.85,-2.29],[5.09,-1.62],[5.34,-1.01],[5.58,-0.43],[5.82,0.08],[6.06,0.28]] }
+  { label: 'THF2-TTE removal (6.2)', color: '#FFAB91', dash: true, fill: false,
+    pts: [[3.40,0.00],[3.64,-0.11],[3.88,-1.79],[4.13,-1.54],[4.37,-3.22],[4.61,-2.91],[4.85,-2.29],[5.09,-1.62],[5.34,-1.01],[5.58,-0.43],[5.82,0.08],[6.06,0.28],[6.16,0.41],[6.42,0.86],[6.69,1.36],[6.95,1.93],[7.21,1.87],[7.47,2.21],[7.74,2.58],[8.00,2.94]] }
 ].map(s => ({
   label: s.label,
   data: s.pts.map(p => ({x: p[0], y: p[1]})),
@@ -710,7 +710,7 @@ new Chart(document.getElementById('chartBarriers'), {
     labels: ['DEE2-TTE\ndesol','THF2-TTE\ndesol','FSI-DEE2\ndesol','FSI-THF2\ndesol','THF4\ndesol','DEE4\ndesol','DEE2-TTE\nremoval','THF2-TTE\nremoval'],
     datasets: [{
       label: 'Barrier (kcal/mol)',
-      data: [17.01, 6.73, 9.86, 5.64, 13.27, 22.08, 6.89, 2.94],
+      data: [17.04, 6.73, 9.86, 7.76, 13.90, 22.14, 8.72, 6.16],
       backgroundColor: [DEE, THF, DEE+'88', THF+'88', THF+'cc', DEE+'cc', TTE, TTE+'88'],
       borderColor: [DEE, THF, DEE, THF, THF, DEE, TTE, TTE],
       borderWidth: 1
