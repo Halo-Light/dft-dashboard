@@ -1,7 +1,7 @@
 {
   "meta": {
     "server_id": "pitin",
-    "updated": "2026-04-05T18:41:00+09:00",
+    "updated": "2026-04-05T19:35:00+09:00",
     "running_orca": 34
   },
   "phase1": [
@@ -1199,6 +1199,24 @@
     "B": 3,
     "C": 0
   },
+  "discussion": [
+    {
+      "title": "1. Solvation Thermodynamics: THF Always Wins",
+      "html": "At 233 K (LHCE operating temperature), THF forms <span class=\"highlight\">consistently stronger</span> solvation shells than DEE across all coordination numbers. For mono-solvation (n=1), the difference is modest: &Delta;G<sub>DEE</sub> = &minus;33.25 vs &Delta;G<sub>THF</sub> = &minus;34.95 kcal/mol (&Delta;&Delta;G = &minus;1.69). However, at n=2 the gap becomes <b>dramatic</b>: &Delta;G<sub>DEE</sub> = &minus;34.73 vs &Delta;G<sub>THF</sub> = &minus;59.20 kcal/mol (&Delta;&Delta;G = &minus;24.48). This 14-fold amplification from n=1&rarr;n=2 reflects DEE's severe steric penalty &mdash; the second DEE barely fits around Li<sup>+</sup> (1 imaginary frequency at &minus;25 cm<sup>&minus;1</sup>, Grade B), while THF's compact ring geometry allows clean di-solvation (Grade A). Beyond n=2, DEE <span class=\"highlight\">completely fails</span>: Li(DEE)3 shows only 1/3 O-coordination (+19.81 kcal/mol), Li(DEE)4 only 2/4 (+66.24 kcal/mol). In contrast, THF achieves stable 4-coordination with &Delta;G = &minus;90.57 kcal/mol. In contact ion pairs (CIP) with FSI<sup>&minus;</sup>, the solvent differential nearly vanishes (&Delta;&Delta;G = &minus;0.71 for n=1 CIP, &minus;1.71 for n=2 CIP), because FSI<sup>&minus;</sup>'s strong electrostatic interaction dominates the first coordination shell."
+    },
+    {
+      "title": "2. TTE Effect: Entropy-Driven Destabilization",
+      "html": "TTE (1,1,2,2-tetrafluoroethyl-2,2,3,3-tetrafluoropropyl ether) systematically <span class=\"highlight\">destabilizes</span> solvation shells by occupying coordination sites while contributing massive entropy penalties. The progression is striking: pure Li(DEE)<sub>2</sub> has &Delta;G = &minus;34.73, adding one TTE yields &Delta;G = &minus;18.51 (loss of 16.2 kcal/mol), and two TTEs give &Delta;G = &minus;9.56 (75% binding destroyed). For THF, the trend is similar but THF's stronger base binding provides more buffer: Li(THF)<sub>2</sub> &Delta;G = &minus;59.20 &rarr; +1 TTE: &minus;47.53 &rarr; +2 TTE: &minus;34.16. The extreme case is <b>Li(THF)<sub>2</sub>(TTE)<sub>2</sub></b> where &Delta;G = <span class=\"highlight\">+3.65 kcal/mol</span> &mdash; thermodynamically <b>unfavorable</b> despite &Delta;H = &minus;30.85. The culprit is entropy: T&Delta;S escalates from &minus;13.96 (pure n=2) to &minus;22.39 (+1 TTE) to &minus;34.51 kcal/mol (+2 TTE). Each TTE molecule adds ~10 kcal/mol of entropy penalty at 233 K due to loss of translational/rotational freedom of the large fluorinated chain. This progressive entropy loading is the <span class=\"highlight\">thermodynamic mechanism</span> by which TTE as a diluent weakens the solvation structure in LHCE electrolytes."
+    },
+    {
+      "title": "3. The Barrier Paradox: Weaker Binding, Higher Barrier?",
+      "html": "Phase 3 relaxed surface scans reveal a <span class=\"highlight\">counterintuitive</span> relationship between thermodynamic stability and kinetic lability. In TTE-containing complexes, DEE has <b>weaker</b> binding (&Delta;G = &minus;18.51) but a <b>higher</b> desolvation barrier (17.01 kcal/mol), while THF has <b>stronger</b> binding (&Delta;G = &minus;47.53) but a <b>lower</b> barrier (6.73 kcal/mol). This 2.5&times; barrier ratio means THF exchange is kinetically facile while DEE-solvated species are <span class=\"highlight\">kinetically trapped</span>. The pattern extends to pure solvation: DEE4 desolvation shows a barrier of 22.08 kcal/mol (despite thermodynamic instability), while THF4 shows 13.27 kcal/mol. TTE removal barriers are also asymmetric: 6.89 (DEE<sub>2</sub>-TTE) vs 2.94 (THF<sub>2</sub>-TTE), indicating TTE departs THF clusters ~2&times; more easily. The resolution lies in the <b>transition state geometry</b>: THF's rigid 5-membered ring allows clean departure along the Li&ndash;O coordinate, while DEE's flexible ethyl chains create entanglement during extraction, raising the reorganization energy. FSI<sup>&minus;</sup> partially mitigates this: CIP barriers drop to 9.86 (DEE) and 5.64 (THF) kcal/mol, as the anion provides structural scaffolding. For battery applications, this implies THF-based LHCE enables <span class=\"highlight\">rapid desolvation at the electrode interface</span>, while DEE-based systems risk kinetic bottlenecks despite weaker solvation."
+    },
+    {
+      "title": "4. Entropy as the Hidden Variable",
+      "html": "Temperature-dependent analysis (298 &rarr; 233 K) exposes entropy as the <span class=\"highlight\">dominant factor</span> governing solvation competition at LHCE operating conditions. The free energy shift &Delta;G(223K) &minus; &Delta;G(298K) scales dramatically with coordination number: Li(DEE)<sub>1</sub> shifts only &minus;1.81 kcal/mol, but Li(THF)<sub>4</sub> shifts <b>&minus;9.17 kcal/mol</b>. This means THF's thermodynamic advantage over DEE <span class=\"highlight\">amplifies at low temperature</span>. The physical origin is the &minus;T&Delta;S term: at lower T, the entropy penalty is partially relieved, so the enthalpically favored (stronger binding) species gains disproportionately. For TTE-containing systems, the effect is even more pronounced: Li(THF)<sub>2</sub>(TTE)<sub>2</sub> shifts from &Delta;G = +13.89 at 298 K to +3.65 at 233 K &mdash; a 10.24 kcal/mol stabilization &mdash; yet remains thermodynamically unfavorable even at low T. This entropy-dominated thermodynamics has a critical implication: <span class=\"highlight\">LHCE electrolyte design cannot rely on room-temperature DFT alone</span>. The competitive solvation landscape at the actual operating temperature (233&ndash;253 K for low-T batteries) is qualitatively different from 298 K predictions, with larger &Delta;&Delta;G values, altered TTE displacement equilibria, and potentially inverted selectivity for marginal cases."
+    }
+  ],
   "progress": {
     "phase1": [
       5,

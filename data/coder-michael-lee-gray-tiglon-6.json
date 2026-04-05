@@ -94,14 +94,18 @@
     }
   },
   "npa": [
-    { "name": "Li(DEE)1", "cls": "dee", "type": "Pure", "li_mull": 0.907, "li_low": 0.749, "ct_mull": 0.093, "ct_low": 0.251, "n_o": 1, "ct_note": null },
-    { "name": "Li(DEE)2", "cls": "dee", "type": "Pure", "li_mull": 0.616, "li_low": 0.397, "ct_mull": 0.384, "ct_low": 0.603, "n_o": 2, "ct_note": null },
-    { "name": "Li(THF)1", "cls": "thf", "type": "Pure", "li_mull": 0.928, "li_low": 0.799, "ct_mull": 0.072, "ct_low": 0.201, "n_o": 1, "ct_note": null },
-    { "name": "Li(THF)2", "cls": "thf", "type": "Pure", "li_mull": 0.878, "li_low": 0.632, "ct_mull": 0.122, "ct_low": 0.368, "n_o": 2, "ct_note": null },
-    { "name": "Li(THF)4", "cls": "thf", "type": "Pure", "li_mull": 0.779, "li_low": 0.406, "ct_mull": 0.221, "ct_low": 0.594, "n_o": 4, "ct_note": null },
-    { "name": "Li(FSI)(DEE)1", "cls": "dee", "type": "CIP", "li_mull": 0.829, "li_low": 0.562, "ct_mull": null, "ct_low": null, "n_o": 5, "ct_note": "FSI- dominated" },
-    { "name": "Li(FSI)(DEE)2", "cls": "dee", "type": "CIP", "li_mull": 0.778, "li_low": 0.349, "ct_mull": null, "ct_low": null, "n_o": 6, "ct_note": "FSI- dominated" },
-    { "name": "Li(FSI)(THF)1", "cls": "thf", "type": "CIP", "li_mull": 0.756, "li_low": 0.394, "ct_mull": null, "ct_low": null, "n_o": 5, "ct_note": "FSI- dominated, from property.txt" }
+    { "name": "Li(DEE)1", "cls": "dee", "type": "Pure", "li_npa": 0.980, "li_mull": 0.907, "li_low": 0.749, "ct_npa": 0.020, "ct_mull": 0.093, "ct_low": 0.251, "n_o": 1, "ct_note": null },
+    { "name": "Li(DEE)2", "cls": "dee", "type": "Pure", "li_npa": 0.877, "li_mull": 0.616, "li_low": 0.397, "ct_npa": 0.124, "ct_mull": 0.384, "ct_low": 0.603, "n_o": 2, "ct_note": null },
+    { "name": "Li(THF)1", "cls": "thf", "type": "Pure", "li_npa": 0.990, "li_mull": 0.928, "li_low": 0.799, "ct_npa": 0.010, "ct_mull": 0.072, "ct_low": 0.201, "n_o": 1, "ct_note": null },
+    { "name": "Li(THF)2", "cls": "thf", "type": "Pure", "li_npa": 0.968, "li_mull": 0.878, "li_low": 0.632, "ct_npa": 0.032, "ct_mull": 0.122, "ct_low": 0.368, "n_o": 2, "ct_note": null },
+    { "name": "Li(THF)4", "cls": "thf", "type": "Pure", "li_npa": 0.893, "li_mull": 0.779, "li_low": 0.406, "ct_npa": 0.107, "ct_mull": 0.221, "ct_low": 0.594, "n_o": 4, "ct_note": null },
+    { "name": "Li(FSI)(DEE)1", "cls": "dee", "type": "CIP", "li_npa": 0.956, "li_mull": 0.829, "li_low": 0.562, "ct_npa": 0.044, "ct_mull": null, "ct_low": null, "n_o": 3, "ct_note": "JANPA NPA" },
+    { "name": "Li(FSI)(DEE)2", "cls": "dee", "type": "CIP", "li_npa": 0.844, "li_mull": 0.778, "li_low": 0.349, "ct_npa": 0.156, "ct_mull": null, "ct_low": null, "n_o": 4, "ct_note": "JANPA NPA" },
+    { "name": "Li(FSI)(THF)1", "cls": "thf", "type": "CIP", "li_npa": 0.896, "li_mull": 0.756, "li_low": 0.394, "ct_npa": 0.104, "ct_mull": null, "ct_low": null, "n_o": 3, "ct_note": "JANPA NPA" },
+    { "name": "Li(FSI)(THF)2", "cls": "thf", "type": "CIP", "li_npa": 0.865, "li_mull": 0.617, "li_low": 0.341, "ct_npa": 0.135, "ct_mull": null, "ct_low": null, "n_o": 4, "ct_note": "JANPA NPA" },
+    { "name": "Li(THF)1(TTE)1", "cls": "thf", "type": "TTE", "li_npa": 0.934, "li_mull": 0.830, "li_low": 0.521, "ct_npa": 0.066, "ct_mull": 0.170, "ct_low": 0.479, "n_o": 2, "ct_note": null },
+    { "name": "Li(THF)2(TTE)1", "cls": "thf", "type": "TTE", "li_npa": 0.883, "li_mull": 0.622, "li_low": 0.411, "ct_npa": 0.117, "ct_mull": 0.378, "ct_low": 0.589, "n_o": 3, "ct_note": null },
+    { "name": "Li(DEE)2(TTE)1", "cls": "dee", "type": "TTE", "li_npa": 0.896, "li_mull": null, "li_low": null, "ct_npa": 0.104, "ct_mull": null, "ct_low": null, "n_o": 3, "ct_note": "JANPA NPA only" }
   ],
   "grades": { "A": 12, "A-": 1, "B": 3, "C": 0 },
   "progress": { "phase1": [5, 5], "phase2": [17, 17], "phase3": [8, 10] },
